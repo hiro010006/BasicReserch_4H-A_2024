@@ -1,0 +1,423 @@
+#tabpanel-order {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 中央に配置 */
+    justify-content: center; /* 中央に配置 */
+    height: 100vh;
+    border-radius:5px;
+    background: rgb(255, 255, 255);
+}
+
+#tabpanel-fishing {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: flex-start;
+}
+
+/*タブを横並びに*/
+.tab-label {
+    display: block;
+    float: left;
+ }
+ .tab-label-heading:not(:last-of-type) .tab-label{
+    margin-right: 2px!important;
+ }
+ /*ラジオボタンを全て非表示に*/
+ input[name="tab-radio"] {
+    display: none;
+ }
+ .tab-label{
+    background-color: #b4bdbf!important;
+    color: #525252!important;
+    cursor: pointer!important;
+    font-size: 16px!important;
+    padding: 10px 20px!important;
+    transition: .3s;
+ }
+ .tab-label:hover{
+    opacity: .7!important;
+ }
+ /* 選択されたタブの見た目 */
+ input:checked + h2 > .tab-label{
+    color: #000!important;
+    background-color: #e2e8eb!important;
+    transition: .3s;
+ }
+ .tab-panel{
+    background-color: #e2e8eb;
+    height: 170px;
+    clear: both;
+    display: none; /*パネルを非表示*/
+ }
+ /* 選択されているチェックボックスに応じてパネルを表示 */
+ #tab-a:checked ~ .panel-a,
+ #tab-b:checked ~ .panel-b,
+ #tab-c:checked ~ .panel-c{
+    display: block;
+ }
+ .tab-panel > div{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+ }
+
+#order-section {
+    left: 0;
+    position: absolute;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3列のグリッド */
+    gap: 10px;
+    margin-bottom: 20px; /* 下部に余白 */
+}
+
+/*注文画面*/
+.sushi-item {
+    position: relative;
+}
+
+.sushi-button {
+    font-size: 1em;
+    padding: 0px;
+    margin: 5px;
+    height: auto;
+    width: 22vw;
+    cursor: pointer;
+    border: 7px solid #ffffff;
+    border-style:ridge;
+    color: #000000;
+    background: linear-gradient(to right,#ffffff,#5c5c5c ,#1d1d1d ,#000000)
+}
+
+.quantity-controls {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.quantity-controls button {
+    font-size: 16px;
+    margin:  5px;
+    cursor: pointer;
+}
+
+.bait-button {
+    position: fixed;
+    right: 1vw;
+    top: 38vh;
+    font-size: 2.5vh;
+    cursor: pointer;
+    background-color: #0b8fcc;
+    border: 3px solid #0b8fcc;
+    color: #ffffff;
+}
+
+.confirm-order-button {
+    position: fixed;
+    right: 1vw;
+    top: 65vh;
+    font-size: 2.5vh;
+    cursor: pointer;
+    border: 3px solid #b64040;
+    background-color: #b64040;
+    color: white;
+}
+
+.kaikei-button{
+    position: fixed;
+    right: 1vw;
+    top: 75vh;
+    font-size: 2.5vh;
+    cursor: pointer;
+    border: 3px solid #b64040;
+    background-color: #b64040;
+    color: white; 
+}
+
+.history-button{
+    position: fixed;
+    right: 1vw;
+    top: 55vh;
+    font-size: 2.5vh;
+    cursor: pointer;
+    border: 3px solid #3cc581;
+    background-color: #3cc581;
+    color: white; 
+}
+
+.title{
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.closebutton {
+    font-size: 18px;
+    padding: 10px;
+    background-color: #ec5b5b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 1em;
+}
+
+.total-price{
+    position: fixed;
+    top: 18vh;
+    right: 1vw;
+    background-color: rgb(112, 112, 112);
+    color: rgb(255, 255, 255);
+    
+}
+
+.side-button{
+    width: 15vw;
+    height: 8vh;
+    border-radius: 0.8em;
+}
+
+.side-total{
+    font-size: 2.5vh;
+    width: 15vw;
+    height: 9vh;
+    box-sizing: border-box;
+    padding: 0.2em;
+    text-align: center;
+    border-radius: 0.8em;
+    border: 5px solid #2b2b2b;
+    border-style:ridge;
+}
+
+.total-bait {
+    top: 28vh;
+    position: fixed;
+    right: 1vw;
+    background-color: rgb(112, 112, 112);
+    color: white;
+}
+
+#turi-total-bait{
+    position: relative;
+    top: -100%;
+    left: 40%;
+    font-size: 1.5em;
+    background-color: rgb(39, 129, 145);
+    color: white;
+}
+
+.kakutei-button{
+    font-size: 18px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.slide-font{
+    font-weight: bold;
+}
+
+.historyTableStyle{
+    border-collapse:separate;
+    border-spacing: 5px;
+    width: 80%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.historyTableStyle th,table td{
+border-radius: 5px;
+text-align: center;
+padding: 10px 0;
+}
+
+.historyTableStyle th{
+background-color: #65c752;
+color: white;
+border:solid 1px #519241;
+}
+
+.historyTableStyle td{
+background-color: #c7e4bc;
+border:solid 1px #88af85;
+}
+
+
+/*
+#start-fishing {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 24px;
+    padding: 10px;
+    background-color: rgb(119, 235, 255);
+    border: 3px solid #3549ff;
+    cursor: pointer;
+}
+*/
+/* スライドメニューのスタイル */
+.slide-menu {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background-color: rgb(252, 252, 252);
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.5);
+    transition: bottom 0.3s ease;
+    overflow-y: auto;
+    padding-left: 20px;
+}
+
+.slide-menu.open {
+    bottom: 0;
+}
+
+.slide-menu-header {
+    position: sticky;
+    top: 0;
+    background-color: rgb(252, 252, 252); /* 背景を同じ色にする */
+    z-index: 10; /* 他の要素より前に表示 */
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc; /* 区切り線を追加 */
+}
+
+.confirm-button {
+    font-size: 18px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.sushi-name {
+    font-family: 'serif', serif;
+    font-size: 1.2em;
+    background-color: rgb(0, 0, 0); /* 文字の背景色を青色に指定 */
+    width: 100%;
+    color: white; /* 文字の色を白にして見やすくする */
+    padding: 0px; /* 少し余白をつけて見栄えを良くする */
+    margin: 0px;
+}
+
+.money-name{
+    font-family: 'serif', serif;
+    font-size: 1em;
+    -webkit-text-stroke: 1.8px rgb(0, 0, 0);
+    width: 30%;
+    color: rgb(255, 255, 255); /* 文字の色を白にして見やすくする */
+    padding: 0px; /* 少し余白をつけて見栄えを良くする */
+    margin: 0px;
+}
+
+#boat-img {
+    position: fixed;
+    right: 1vw;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10; /* ボートが海や空よりも前に表示されるように、z-indexを大きくする */
+}
+
+/*釣り画面*/
+#sky {
+    background: linear-gradient(to bottom,#7ae4ff ,#aaf2ff);
+    flex: 1;
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 0; /* 空のz-indexを1に設定（ボートの後ろに来るように） */
+}
+
+#sea {
+    background-color:#93d4ff;
+    position: relative;
+    flex: 1;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden; /* 船が画面外にはみ出ないように */
+    z-index: 0;
+}
+
+#fish-container {
+    text-align: center;
+    margin-top: 20px;
+    position: fixed;
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2; /* 魚のコンテナを前面に */
+}
+
+#hari-img {
+    position: fixed;
+    top: 35%;
+    transform: translateY(-50%);
+    z-index: 1; /* ハリを魚と文字の後ろに */
+    width: auto; /* 幅を設定 */
+    height: auto;
+}
+
+
+#caught-fish-text {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+#fish-img {
+    width: 300px;
+    height: auto;
+    display: block;
+    margin: 25px 25px;
+    opacity: 0;
+    animation: slide-up 2s ease-in-out forwards;
+}
+
+#mark-img{
+    width: 60px;
+    height: auto;
+    display: block;
+    margin: 25px 25px;
+    animation: slide-up 2s ease-in-out forwards;
+}
+
+#do_fishing {
+    position: fixed;
+    bottom: 10px;
+    right: 1vw;
+    font-size: 24px;
+    padding: 10px;
+    background-color: white;
+    border: 3px solid #000000;
+    cursor: pointer;
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(70%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

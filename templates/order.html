@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寿司注文画面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/order_style.css') }}">
+</head>
+<body>
+    <input id="tab-a" type="radio" role="tab" name="tab-radio" class="tab-input" value="usage" checked="">
+    <h2 class="tab-label-heading selected"><label class="tab-label" for="tab-a">注文画面</label></h2>
+    <input id="tab-b" type="radio" role="tab" name="tab-radio" class="tab-input" value="type">
+    <h2 class="tab-label-heading"><label class="tab-label" for="tab-b">釣り画面</label></h2>
+    <div class="tab-panel panel-a" role="tabpanel">
+        <div id="tabpanel-order">
+            <div id="order-section">
+                {% for sushi in orderable_sushis %}
+                    <div class="sushi-item">
+                        <button class="sushi-button" onclick="toggleSushiOrder('{{ sushi }}')">
+                            <img src="{{ url_for('static', filename='images/' + fish_images[sushi]) }}" style="height: 15vh; width: auto;">
+                            <p class="money-name" data-sushi-price={{ money_sushis[sushi] }}>{{money_sushis[sushi]}}円</p> 
+                            <p class="sushi-name">{{ sushi }}</p> <!-- クラスを追加して配置を調整 -->
+                            
+                        </button>
+                        <div class="quantity-controls" id="controls-{{ sushi }}">
+                            <button onclick="decreaseQuantity('{{ sushi }}')">-</button>
+                            <span id="quantity-{{ sushi }}">0</span>
+                            <button onclick="increaseQuantity('{{ sushi }}')">+</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="bait-button side-button" onclick="addBait()">釣り餌<br>(¥100)</button>
+            <div class="total-price side-total" id="total-price">合計金額:<br>¥{{ total_price }}</div>
+            <div class="total-bait side-total" id="total-bait">釣り餌の数:<br>{{ total_bait }}</div>
+            <button class="confirm-order-button side-button" onclick="openSlideMenu('slide-menu')">注文確認</button>
+            <button class="kaikei-button side-button" onclick="openSlideMenu('kaikei')">お会計</button>
+            <button class="history-button side-button" onclick="openSlideMenu('history')">注文履歴</button>
+            <!--
+            <form id="fishing-form" action="/fishing" method="post">
+                <input type="hidden" name="total_price" id="hidden-total-price" value="{{ total_price }}">
+                <input type="hidden" name="total_bait" id="hidden-total-bait" value="{{ total_bait }}">
+                <button id="start-fishing" type="submit" {% if total_bait == 0 %}disabled{% endif %}>釣りをする</button>
+            </form>
+            -->
+           
+            
+            <!-- スライドメニュー -->
+            <div id="slide-menu" class="slide-menu">
+                <div class="slide-menu-header">
+                    <div class="title">注文確定画面</div>
+                    <button class="closebutton" onclick="closeSlideMenu('slide-menu')">閉じる</button>
+                </div>
+                <div id="order-summary"></div>
+                <div id="current-order-total" class="slide-font">今回の注文金額: ¥<span id="current-order-total-price">0</span></div>
+                <div id="order-total" class="slide-font">注文確定後の合計金額: ¥<span id="order-total-price">{{ total_price }}</span></div>
+                <button class="confirm-button" onclick="confirmOrder()">注文を確定する</button>
+            </div>
+
+            <div id="kaikei" class="slide-menu">
+                <div class="slide-menu-header">
+                    <div class="title">お会計画面</div>
+                    <button class="closebutton" onclick="closeSlideMenu('kaikei')">閉じる</button>
+                </div>
+                <div><span id="kaikei-total">0</span></div>
+                <div id="amari-bait"></div>
+                <div class="slide-font"><span id="final-kaikei">0</span></div>
+                <button class="kakutei-button" onclick="resettotal()">お会計確定</button>
+            </div>
+
+            <div id="history" class="slide-menu">
+                <div class="slide-menu-header">
+                    <div class="title">注文履歴</div>
+                    <button class="closebutton" onclick="closeSlideMenu('history')">閉じる</button>
+                </div>
+                <div><span id="history-summary"></span></div>
+                
+
+            </div>
+
+        </div>
+    </div>
+
+    <!--釣り画面-->
+    <div class="tab-panel panel-b" role="tabpanel">
+        <div id="tabpanel-fishing">
+            <div id="sky"></div>
+            <div id="sea">
+                <div id="fish-container">
+
+                    <!--
+                    {% if caught_fish %}
+                        <img id="mark-img" src="{{ url_for('static', filename='images/mark.png') }}" alt="釣れた魚">
+                        <p id="caught-fish-text">釣れた魚: {{ caught_fish }}</p>
+                        <img id="fish-img" src="{{ url_for('static', filename='images/' + fish_image) }}" alt="釣れた魚">
+                    {% endif %}
+                    -->
+                    
+                </div>
+
+                <!-- ハリの画像を追加 -->
+                <div id="hari-img">
+                    <img src="{{ url_for('static', filename='images/hari.png') }}" alt="ハリの画像">
+                </div>
+            </div>
+            <!-- 船の画像を追加 -->
+            <div id="boat-img">
+                <img src="{{ url_for('static', filename='images/boat.png') }}" alt="船の画像">
+            </div>
+            <div id="turi-total-bait">釣り餌の数: {{ total_bait }}</div>
+            <!-- hidden inputのvalueに直接JSONを埋め込む -->
+            <input type="hidden" id="hidden-fishable-sushis" value='{{ fishable_sushis_json }}'>
+            <input type="hidden" id="hidden-fishable-sushis-img" value='{{ fishable_sushis_img_json }}'>
+
+            <input type="hidden" name="total_bait" id="hidden-total-bait" value="{{ total_bait }}">
+            <input type="hidden" name="total_price" id="hidden-total-price" value="{{ total_price }}">
+            
+            <!-- 釣りをするボタン -->
+            <button id="do_fishing" onclick="fishTheSushi()" >釣りをする</button>
+            
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/order_script.js') }}"></script>
+</body>
+</html>
