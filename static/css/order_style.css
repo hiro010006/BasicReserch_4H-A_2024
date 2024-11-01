@@ -421,3 +421,117 @@ border:solid 1px #88af85;
         opacity: 1;
     }
 }
+
+.slots {
+    width: 48px;
+    height: 94px;
+    border: 2px solid;
+    float: left;
+  }
+  .slots .wrapper {
+    width: 46px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+  
+  #slots_a,
+  #slots_b,
+  #slots_c {
+    position: relative;
+    float: left;
+    width: 48px;
+    height: 94px;
+    background-color: white;
+    border: 2px palegoldenrod outset;
+    overflow: hidden;
+  }
+  
+  #slots_a .wrapper,
+  #slots_b .wrapper,
+  #slots_c .wrapper {
+    position: absolute;
+    width: 46px;
+  }
+  
+  #slots_a .wrapper .slot,
+  #slots_b .wrapper .slot,
+  #slots_c .wrapper .slot {
+    width: 46px;
+    height: 30px;
+    text-align: center;
+    padding-top: 2px;
+  }
+  
+  .slotglass-top {
+    position: absolute;
+    z-index: 999;
+    width: 46px;
+    height: 15px;
+    background: -moz-linear-gradient(top, rgba(20,20,20,0.3), rgba(20,20,20,0));
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(20,20,20,0.3)), to(rgba(20,20,20,0)));
+    background: -o-linear-gradient(top, rgba(20,20,20,0.3), rgba(20,20,20,0));
+    background: linear-gradient(top, rgba(20,20,20,0.3), rgba(20,20,20,0));
+  }
+  
+  .slotglass-bottom {
+    position: absolute;
+    z-index: 999;
+    width: 45px;
+    height: 15px;
+    bottom: 0px;
+    background: -moz-linear-gradient(top, rgba(20,20,20,0), rgba(20,20,20,0.3));
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(20,20,20,0)), to(rgba(20,20,20,0.3)));
+    background: -o-linear-gradient(top, rgba(20,20,20,0), rgba(20,20,20,0.3));
+    background: linear-gradient(top, rgba(20,20,20,0), rgba(20,20,20,0.3));
+  }
+  
+  .slotline {
+    position: absolute;
+    z-index: 999;
+    width: 45px;
+    height: 2px;
+    top: 44px;
+    opacity: 0.8;
+    background-color: red;
+  }
+  
+  #slotbox {
+    top: 50%;
+    position: absolute;
+    background-color: #e6cd62;
+    box-shadow: 0px 0px 15px -5px rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    width: 185px;
+    padding: 20px;
+    margin: 0 auto;
+    z-index: 10;
+  }
+  
+  #slotMsg {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    font-size: 1em;
+    text-align: center;
+    border: 1px #C0C0C0 inset;
+    border-radius: 5px;
+    width: 100%;
+    margin: 5px 0;
+  }
+  
+  #startBtn {
+    border-radius: 10px;
+    background-color: rgb(226, 34, 34);
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    text-shadow:1px 1px 2px #333;
+    outline: 0;
+  }
+  
+  .osusume{
+    width: 50%;
+    height: 50%;
+  }
