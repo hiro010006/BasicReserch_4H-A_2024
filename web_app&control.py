@@ -9,7 +9,7 @@ from flask import Flask, request, render_template, session, jsonify
 from waitress import serve
 import threading
 
-env_Dobot = False #webappだけ動かすときはFalse
+env_Dobot = True #webappだけ動かすときはFalse
 
 # Initial value setting
 detection_img_size = 640 #square 640 * 640
@@ -20,8 +20,13 @@ diagonal_angle_views = math.radians(55)
 angles_of_view = {"horizontal" : diagonal_angle_views * cam_frame_size["x"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2)), 
                   "vertical" : diagonal_angle_views * cam_frame_size["y"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2))}
 initial_position = {"x" : 400, "y" : 0, "z" : 100, "r" : 0}
-jump_position = {"z_sushi" : 70, "z_plate" : 55, "r" : 0}
+catch_position_z = {"sushi" : 65, "plate" : 52}
+release_position = {"sushi" : {"x" : 300, "y" : -130, "z" : 150, "r" : 90},
+                    "plate" : {"x" : 300, "y" : -130, "z" : 150, "r" : 90}}
 angles_of_servo = {"open" : 60, "sushi_close" : 135, "plate_close" : 100}
+number_of_plates = 7
+thickness_of_plate = 4.25
+position_plate = {"x" : 200, "y" : 0}
 
 # Details of each servers
 detection_server_host = '127.0.0.1'
@@ -105,20 +110,22 @@ def send_order():
 # Function to process 
 def process_control():
     connect_with_server()
+
+    hand_control(angles_of_servo["open"])
+    global client_sockets
+    client_sockets["dobot_client_sock"].wait(2000)
+    client_sockets["dobot_client_sock"].jump_to(x = initial_position["x"], y = initial_position["y"], z = initial_position["z"], r = initial_position["r"])
+    
     while True:
         try:
             # Receive a message from the server
-            global client_sockets
-            client_sockets["dobot_client_sock"].wait(2000)
-            client_sockets["dobot_client_sock"].jump_to(x = initial_position["x"], y = initial_position["y"], z = initial_position["z"], r = initial_position["r"])
-            hand_control(angles_of_servo["open"])
             response = client_sockets["detection_client_sock"].recv(4096)
-
             # If no response, break and retry the connection
             if not response:
                 print(f"No response from {detection_server_host}, retrying...")
                 continue
 
+            place_plate()
             arm_control(response)
 
         except socket.timeout:
@@ -170,8 +177,10 @@ def arm_control(response):
     for item in coord_data:
         print(item)
         if conversion_table[item["label"]] in sushis_to_get and sushis_to_get[conversion_table[item["label"]]] > 0:
+            #画像中央を原点とした座標系に写す(-180 <= x_relative <= 180, -320 <= y_relative <= 320)
             x_relative = -((int(item['y1']) + int(item['y2'])) / 2 - (detection_img_size * (cam_frame_size["y"] / cam_frame_size["x"]) / 2))
             y_relative = (int(item['x1']) + int(item['x2'])) / 2 - (detection_img_size / 2)
+            #画面の座標をカメラ中央からの角度に写す
             theta_scale = { "x" : math.tan(angles_of_view["vertical"] / 2), 
                             "y" : math.tan(angles_of_view["horizontal"] / 2)}
             theta = {"x" : math.atan((x_relative / (detection_img_size * (cam_frame_size["y"] / cam_frame_size["x"]) / 2)) * theta_scale["x"]), 
@@ -179,7 +188,7 @@ def arm_control(response):
 
             position_to_send = {"x" : (position_cam["x"] + position_cam["z"] * math.tan(theta_x0 + theta["x"])), 
                                 "y" : (position_cam["y"] + position_cam["z"] * math.tan(-theta["y"])), 
-                                "z" : 30, 
+                                "z" : catch_position_z["sushi"], 
                                 "r" : 0}
 
             print(f"クラス: {item['label']}, 座標: ({position_to_send['x']}, {position_to_send['y']}), 信頼度: {item['confidence']}")
@@ -187,10 +196,24 @@ def arm_control(response):
                 print("out of the Dobot's range")
                 continue
 
-            client_sockets["dobot_client_sock"].jump_to(x = int(position_to_send["x"]), y = int(position_to_send["y"]), z = jump_position["z_sushi"], r = jump_position["r"])
+            client_sockets["dobot_client_sock"].jump_to(x = int(position_to_send["x"]), y = int(position_to_send["y"]), z = int(position_to_send["z"]), r = int(position_to_send["r"]))
             hand_control(angles_of_servo["sushi_close"])
             client_sockets["dobot_client_sock"].wait(1000)
             sushis_to_get[conversion_table[item["label"]]] -= 1
+
+            client_sockets["dobot_client_sock"].jump_to(x = release_position["sushi"]["x"], y = release_position["sushi"]["y"], z = release_position["sushi"]["z"], r = release_position["sushi"]["r"])
+            hand_control(angles_of_servo["open"])
+
+def place_plate():
+    global number_of_plates,client_sockets
+    z_plate = catch_position_z["plate"] + thickness_of_plate * number_of_plates
+    client_sockets["dobot_client_sock"].jump_to(x = position_plate["x"], y = position_plate["y"], z = int(z_plate), r = 0)
+    hand_control(angles_of_servo["plate_close"])
+    client_sockets["dobot_client_sock"].jump_to(x = release_position["plate"]["x"], y = release_position["plate"]["y"], z = release_position["plate"]["z"], r = release_position["plate"]["r"])
+    hand_control(angles_of_servo["open"])
+    number_of_plates -= 1
+    client_sockets["dobot_client_sock"].wait(1000)
+
 
 if __name__ == '__main__':
     if env_Dobot:
