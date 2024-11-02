@@ -21,24 +21,28 @@ angles_of_view = {"horizontal" : diagonal_angle_views * cam_frame_size["x"] / (m
                   "vertical" : diagonal_angle_views * cam_frame_size["y"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2))}
 initial_position = {"x" : 400, "y" : 0, "z" : 100, "r" : 0}
 catch_position_z = {"sushi" : 65, "plate" : 52}
-release_position = {"sushi" : {"x" : 300, "y" : -130, "z" : 150, "r" : 90},
-                    "plate" : {"x" : 300, "y" : -130, "z" : 150, "r" : 90}}
+release_position = {"sushi" : {"x" : 200, "y" : -300, "z" : 150, "r" : 90},
+                    "plate" : {"x" : 200, "y" : -300, "z" : 150, "r" : 90}}
 angles_of_servo = {"open" : 60, "sushi_close" : 135, "plate_close" : 100}
 number_of_plates = 7
 thickness_of_plate = 4.25
-position_plate = {"x" : 200, "y" : 0}
+position_plate = {"x" : 300, "y" : 0}
+sushis_to_get = {}
 
 # Details of each servers
 detection_server_host = '127.0.0.1'
 detection_server_port = 55580
 dobot_server_host = '10.133.3.222'
-dobot_server_port = 8084
+dobot_server_port = 7087
 pico_server_host = '192.168.137.114'
 pico_server_port = 8851
+rpi4_server_host = '10.133.6.123'
+rpi4_server_port = 8861
 client_sockets = {}
+#dobotは接続方法が異なるので除外
 sock_info = {"detection_client_sock" : [detection_server_host, detection_server_port],
-             "pico_client_sock" : [pico_server_host, pico_server_port]} #dobotは接続方法が異なるので除外
-sushis_to_get = {}
+             "pico_client_sock" : [pico_server_host, pico_server_port], 
+             "rpi4_client_sock" : [rpi4_server_host, rpi4_server_port]}
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -125,7 +129,6 @@ def process_control():
                 print(f"No response from {detection_server_host}, retrying...")
                 continue
 
-            place_plate()
             arm_control(response)
 
         except socket.timeout:
@@ -173,6 +176,8 @@ def hand_control(angle):
 
 def arm_control(response):
     global sushis_to_get
+    send_position_table = []
+    num_of_sushi_to_move = 0
     coord_data = pickle.loads(response)
     for item in coord_data:
         print(item)
@@ -195,14 +200,27 @@ def arm_control(response):
             if not ((position_to_send["x"] ** 2 + position_to_send["y"] ** 2) < (400 ** 2)):
                 print("out of the Dobot's range")
                 continue
-
-            client_sockets["dobot_client_sock"].jump_to(x = int(position_to_send["x"]), y = int(position_to_send["y"]), z = int(position_to_send["z"]), r = int(position_to_send["r"]))
-            hand_control(angles_of_servo["sushi_close"])
-            client_sockets["dobot_client_sock"].wait(1000)
             sushis_to_get[conversion_table[item["label"]]] -= 1
 
-            client_sockets["dobot_client_sock"].jump_to(x = release_position["sushi"]["x"], y = release_position["sushi"]["y"], z = release_position["sushi"]["z"], r = release_position["sushi"]["r"])
-            hand_control(angles_of_servo["open"])
+            send_position_table.append(position_to_send)
+
+    for position in send_position_table:
+        num_of_sushi_to_move += 1
+        print(len(send_position_table))
+        place_plate()
+        client_sockets["dobot_client_sock"].jump_to(x = int(position["x"]), y = int(position["y"]), z = int(position["z"]), r = int(position["r"]))
+        hand_control(angles_of_servo["sushi_close"])
+        client_sockets["dobot_client_sock"].wait(1000)
+
+        client_sockets["dobot_client_sock"].jump_to(x = release_position["sushi"]["x"], y = release_position["sushi"]["y"], z = release_position["sushi"]["z"], r = release_position["sushi"]["r"])
+        hand_control(angles_of_servo["open"])
+
+        if num_of_sushi_to_move < len(send_position_table):
+            print("lap_top - advance_one_plate")
+            lane_control("advance_one_plate")
+        else:
+            lane_control("advance_plate_for_guest")
+            num_of_sushi_to_move = 0
 
 def place_plate():
     global number_of_plates,client_sockets
@@ -214,6 +232,8 @@ def place_plate():
     number_of_plates -= 1
     client_sockets["dobot_client_sock"].wait(1000)
 
+def lane_control(lane_massege):
+    client_sockets["rpi4_client_sock"].sendall(f"{lane_massege}\n".encode('utf-8'))
 
 if __name__ == '__main__':
     if env_Dobot:
