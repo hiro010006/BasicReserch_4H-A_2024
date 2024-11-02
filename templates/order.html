@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/order_style.css') }}">
 </head>
 <body>
+<input id="tab-c" type="radio" role="tab" name="tab-radio" class="tab-input" value="type">
+    <h2 class="tab-label-heading"><label class="tab-label" for="tab-c">おすすめ</label></h2>
     <input id="tab-a" type="radio" role="tab" name="tab-radio" class="tab-input" value="usage" checked="">
     <h2 class="tab-label-heading selected"><label class="tab-label" for="tab-a">注文画面</label></h2>
     <input id="tab-b" type="radio" role="tab" name="tab-radio" class="tab-input" value="type">
@@ -84,6 +86,40 @@
     <!--釣り画面-->
     <div class="tab-panel panel-b" role="tabpanel">
         <div id="tabpanel-fishing">
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スロットマシン</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>スロットマシン</h1>
+        <div class="slot-container">
+            <div>
+                <div id="slot1" class="slot" img src="static/images/maguro_image"></div>
+                <button id="stopButton1" class="stopButton">ストップ</button>
+            </div>
+            <div>
+                <div id="slot2" class="slot"></div>
+                <button id="stopButton2" class="stopButton">ストップ</button>
+            </div>
+            <div>
+                <div id="slot3" class="slot"></div>
+                <button id="stopButton3" class="stopButton">ストップ</button>
+            </div>
+        </div>
+        <div class="control">
+            <button id="startButton" class="startButton">スタート</button>
+            <p id="result"></p>
+        </div>
+    </div>
+
+    <script src="slot.js"></script>
+</body>
+</html>
+
             <div id="sky"></div>
             <div id="sea">
                 <div id="fish-container">
@@ -123,4 +159,5 @@
     
     <script src="{{ url_for('static', filename='js/order_script.js') }}"></script>
 </body>
+<div class="tab-panel panel-c" role="tabpanel"></div>
 </html>
