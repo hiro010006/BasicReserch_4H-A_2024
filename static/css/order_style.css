@@ -422,116 +422,81 @@ border:solid 1px #88af85;
     }
 }
 
-.slots {
-    width: 48px;
-    height: 94px;
-    border: 2px solid;
-    float: left;
-  }
-  .slots .wrapper {
-    width: 46px;
-  }
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f9fc;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
 
-  * {
-    box-sizing: border-box;
-  }
-  
-  #slots_a,
-  #slots_b,
-  #slots_c {
-    position: relative;
-    float: left;
-    width: 48px;
-    height: 94px;
-    background-color: white;
-    border: 2px palegoldenrod outset;
-    overflow: hidden;
-  }
-  
-  #slots_a .wrapper,
-  #slots_b .wrapper,
-  #slots_c .wrapper {
-    position: absolute;
-    width: 46px;
-  }
-  
-  #slots_a .wrapper .slot,
-  #slots_b .wrapper .slot,
-  #slots_c .wrapper .slot {
-    width: 46px;
-    height: 30px;
+.container {
     text-align: center;
-    padding-top: 2px;
-  }
-  
-  .slotglass-top {
-    position: absolute;
-    z-index: 999;
-    width: 46px;
-    height: 15px;
-    background: -moz-linear-gradient(top, rgba(20,20,20,0.3), rgba(20,20,20,0));
-    background: -webkit-gradient(linear, left top, left bottom, from(rgba(20,20,20,0.3)), to(rgba(20,20,20,0)));
-    background: -o-linear-gradient(top, rgba(20,20,20,0.3), rgba(20,20,20,0));
-    background: linear-gradient(top, rgba(20,20,20,0.3), rgba(20,20,20,0));
-  }
-  
-  .slotglass-bottom {
-    position: absolute;
-    z-index: 999;
-    width: 45px;
-    height: 15px;
-    bottom: 0px;
-    background: -moz-linear-gradient(top, rgba(20,20,20,0), rgba(20,20,20,0.3));
-    background: -webkit-gradient(linear, left top, left bottom, from(rgba(20,20,20,0)), to(rgba(20,20,20,0.3)));
-    background: -o-linear-gradient(top, rgba(20,20,20,0), rgba(20,20,20,0.3));
-    background: linear-gradient(top, rgba(20,20,20,0), rgba(20,20,20,0.3));
-  }
-  
-  .slotline {
-    position: absolute;
-    z-index: 999;
-    width: 45px;
-    height: 2px;
-    top: 44px;
-    opacity: 0.8;
-    background-color: red;
-  }
-  
-  #slotbox {
-    top: 50%;
-    position: absolute;
-    background-color: #e6cd62;
-    box-shadow: 0px 0px 15px -5px rgba(0, 0, 0, 0.8);
-    border-radius: 5px;
-    width: 185px;
     padding: 20px;
-    margin: 0 auto;
-    z-index: 10;
-  }
-  
-  #slotMsg {
-    background-color: black;
-    color: white;
-    font-weight: bold;
-    font-size: 1em;
-    text-align: center;
-    border: 1px #C0C0C0 inset;
-    border-radius: 5px;
-    width: 100%;
-    margin: 5px 0;
-  }
-  
-  #startBtn {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+}
+
+h1 {
+    margin-bottom: 30px;
+    color: #4a90e2;
+}
+
+.slot-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.slot {
+    font-size: 50px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 10px;
-    background-color: rgb(226, 34, 34);
-    width: 100%;
-    color: white;
+    background-color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    margin: 0 10px;
+    transition: transform 0.2s ease;
+}
+
+.slot:hover {
+    transform: scale(1.1);
+}
+
+.stopButton, .startButton {
+    margin-top: 10px;
+    padding: 12px 20px;
+    font-size: 16px;
     font-weight: bold;
-    text-shadow:1px 1px 2px #333;
-    outline: 0;
-  }
-  
-  .osusume{
-    width: 50%;
-    height: 50%;
-  }
+    color: white;
+    background-color: #4a90e2;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.stopButton:hover, .startButton:hover {
+    background-color: #357ABD;
+    transform: translateY(-3px);
+}
+
+.control {
+    margin-top: 30px;
+}
+
+#result {
+    font-size: 20px;
+    margin-top: 20px;
+    color: #333;
+    font-weight: bold;
+}
