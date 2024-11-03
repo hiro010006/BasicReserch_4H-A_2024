@@ -409,18 +409,8 @@ border:solid 1px #88af85;
     }
 }
 
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f7f9fc;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
 .container {
+    position: absolute;
     text-align: center;
     padding: 20px;
     background-color: #fff;
@@ -428,10 +418,12 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     width: 80%;
     max-width: 600px;
+    top: 40%;
+    z-index: 15;
 }
 
-h1 {
-    margin-bottom: 30px;
+#slottitle {
+    font-size: 2.2em;
     color: #4a90e2;
 }
 

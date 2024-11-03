@@ -86,39 +86,39 @@
     <!--釣り画面-->
     <div class="tab-panel panel-b" role="tabpanel">
         <div id="tabpanel-fishing">
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>スロットマシン</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <h1>スロットマシン</h1>
-        <div class="slot-container">
-            <div>
-                <div id="slot1" class="slot" img src="static/images/maguro_image"></div>
-                <button id="stopButton1" class="stopButton">ストップ</button>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>スロットマシン</title>
+            <link rel="stylesheet" href="style.css">
+        </head>
+        <body>
+            <div class="container">
+                <div id = "slottitle">スロットマシン</div>
+                <div class="slot-container">
+                    <div>
+                        <div id="slot1" class="slot"><img src="static/images/maguro.png" style="height: 10vh; width: 10vw;"></div>
+                        <button id="stopButton1" class="stopButton">ストップ</button>
+                    </div>
+                    <div>
+                        <div id="slot2" class="slot"><img src="static/images/maguro.png" style="height: 10vh; width: 10vw;"></div>
+                        <button id="stopButton2" class="stopButton">ストップ</button>
+                    </div>
+                    <div>
+                        <div id="slot3" class="slot"><img src="static/images/maguro.png" style="height: 10vh; width: 10vw;"></div>
+                        <button id="stopButton3" class="stopButton">ストップ</button>
+                    </div>
+                </div>
+                <div class="control">
+                    <button id="startButton" class="startButton">スタート</button>
+                    <p id="result"></p>
+                </div>
             </div>
-            <div>
-                <div id="slot2" class="slot"></div>
-                <button id="stopButton2" class="stopButton">ストップ</button>
-            </div>
-            <div>
-                <div id="slot3" class="slot"></div>
-                <button id="stopButton3" class="stopButton">ストップ</button>
-            </div>
-        </div>
-        <div class="control">
-            <button id="startButton" class="startButton">スタート</button>
-            <p id="result"></p>
-        </div>
-    </div>
-
-    <script src="slot.js"></script>
-</body>
-</html>
+        
+            <script src="slot.js"></script>
+        </body>
+        </html>
 
             <div id="sky"></div>
             <div id="sea">
@@ -134,10 +134,10 @@
                     
                 </div>
 
-                <!-- ハリの画像を追加 -->
+                <!-- ハリの画像を追加 
                 <div id="hari-img">
                     <img src="{{ url_for('static', filename='images/hari.png') }}" alt="ハリの画像">
-                </div>
+                </div>-->
             </div>
             <!-- 船の画像を追加 -->
             <div id="boat-img">

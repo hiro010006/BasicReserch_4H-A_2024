@@ -279,8 +279,18 @@ let slotTimers = [];
 let isSpinning = [false, false, false]; // 各リールの状態を管理
 let speeds = [initialSpeed, initialSpeed, initialSpeed]; // 各リールのスピードを独立して管理
 
+//スロットを開始する時に餌を消費するのとスロット中に回しなおしができないようにする
+function startSlot(){
+if (totalBait > 0 && !isSpinning.includes(true)) {
+    totalBait -= 1;
+    document.getElementById('hidden-total-bait').value = totalBait;
+    slotrole()
+    updateDisplay();
+}
+}
+
 // スロットを開始する関数
-function startSlot() {
+function slotrole() {
     document.getElementById('result').textContent = ''; // 結果をクリア
     for (let i = 0; i < slots.length; i++) {
         if (!isSpinning[i]) {
