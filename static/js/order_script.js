@@ -5,7 +5,7 @@ let currentOrderTotalSushiCount = 0;
 let order = {};
 const orderLimit = 3;
 var historyTable = [];
-let numOrder = 0;;
+let numOrder = 0;
 
 const money_sushis = {
     'マグロ': 300,
@@ -14,7 +14,38 @@ const money_sushis = {
     'イクラ': 400,
     'ウニ': 500,
     'たまご': 100
-}
+};
+
+const recommend_sushi_paths = ["/static/images/recommend_uni.png",
+                               "/static/images/recommend_ikura.png"];
+
+let currentIndex = 0;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const recommendItem = document.getElementById("recommendItem");
+    console.log(recommendItem);
+
+    const recommend_images = recommend_sushi_paths.map(path => {
+        const img = document.createElement("img");
+        img.src = path;
+        recommendItem.appendChild(img);
+        return img;
+    });
+    recommend_images[currentIndex].classList.add("active");    
+});
+
+let startX = 0;
+recommendItem.addEventListener("touchstart", (event) => {
+    startX = event.touches[0].clientX;
+    console.log("Touch start:", startX);
+});
+
+recommendItem.addEventListener("touchend", (event) => {
+    const endX = event.changedTouches[0].clientX;
+    console.log("Touch end:", endX);
+    const direction = endX < startX ? "left" : "right";
+    changeImage(direction);
+});
 
 window.onload = function() {
     updateDisplay(); // これにより0が表示されるのを防ぎます
@@ -63,6 +94,40 @@ function addBait() {
     document.getElementById('hidden-total-price').value = totalPrice;
     document.getElementById('hidden-total-bait').value = totalBait;
     document.getElementById('start-fishing').disabled = false;
+}
+
+// 画像の切り替え関数
+function changeImage(direction) {
+    const currentImage = recommend_images[currentIndex];
+    currentImage.classList.remove("active");
+
+    // フェードアウトアニメーションの追加
+    if (direction === "left") {
+        currentImage.classList.add("fade-out-left");
+    } else {
+        currentImage.classList.add("fade-out-right");
+    }
+
+    // 次の画像のインデックスを計算
+    currentIndex = (direction === "left")
+        ? (currentIndex + 1) % recommend_images.length
+        : (currentIndex - 1 + recommend_images.length) % recommend_images.length;
+
+    const nextImage = recommend_images[currentIndex];
+
+    // フェードインアニメーションの追加
+    nextImage.classList.add("active");
+    if (direction === "left") {
+        nextImage.classList.add("fade-in-right");
+    } else {
+        nextImage.classList.add("fade-in-left");
+    }
+
+    // アニメーション後にクラスをリセット
+    setTimeout(() => {
+        currentImage.classList.remove("fade-out-left", "fade-out-right");
+        nextImage.classList.remove("fade-in-left", "fade-in-right");
+    }, 500);
 }
 
 function updateDisplay() {
