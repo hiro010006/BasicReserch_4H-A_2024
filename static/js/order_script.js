@@ -21,28 +21,29 @@ const recommend_sushi_paths = ["/static/images/recommend_uni.png",
 
 let currentIndex = 0;
 
-document.addEventListener("DOMContentLoaded", () => {
-    const recommendItem = document.getElementById("recommendItem");
-    console.log(recommendItem);
+const recommendItem = document.getElementById("recommendItem");
+console.log(recommendItem);
 
-    const recommend_images = recommend_sushi_paths.map(path => {
-        const img = document.createElement("img");
-        img.src = path;
-        recommendItem.appendChild(img);
-        return img;
-    });
-    recommend_images[currentIndex].classList.add("active");    
+const recommend_images = recommend_sushi_paths.map(path => {
+    const img = document.createElement("img");
+    img.src = path;
+    recommendItem.appendChild(img);
+    return img;
 });
+recommend_images[currentIndex].classList.add("active");
+
+// 10秒ごとに自動でスライドさせる
+setInterval(() => {
+    changeImage("left");
+}, 10000);
 
 let startX = 0;
 recommendItem.addEventListener("touchstart", (event) => {
     startX = event.touches[0].clientX;
-    console.log("Touch start:", startX);
 });
 
 recommendItem.addEventListener("touchend", (event) => {
     const endX = event.changedTouches[0].clientX;
-    console.log("Touch end:", endX);
     const direction = endX < startX ? "left" : "right";
     changeImage(direction);
 });
@@ -93,7 +94,6 @@ function addBait() {
     updateDisplay();
     document.getElementById('hidden-total-price').value = totalPrice;
     document.getElementById('hidden-total-bait').value = totalBait;
-    document.getElementById('start-fishing').disabled = false;
 }
 
 // 画像の切り替え関数
@@ -116,17 +116,17 @@ function changeImage(direction) {
     const nextImage = recommend_images[currentIndex];
 
     // フェードインアニメーションの追加
-    nextImage.classList.add("active");
     if (direction === "left") {
         nextImage.classList.add("fade-in-right");
     } else {
         nextImage.classList.add("fade-in-left");
     }
+    nextImage.classList.add("active");
 
     // アニメーション後にクラスをリセット
     setTimeout(() => {
-        currentImage.classList.remove("fade-out-left", "fade-out-right");
-        nextImage.classList.remove("fade-in-left", "fade-in-right");
+        currentImage.classList.remove("fade-out-left", "fade-out-right","fade-in-left", "fade-in-right");
+        nextImage.classList.remove("fade-out-left", "fade-out-right","fade-in-left", "fade-in-right");
     }, 500);
 }
 
@@ -282,6 +282,7 @@ let speeds = [initialSpeed, initialSpeed, initialSpeed]; // 各リールのス�
 //スロットを開始する時に餌を消費するのとスロット中に回しなおしができないようにする
 function startSlot(){
 if (totalBait > 0 && !isSpinning.includes(true)) {
+    console.log("start slot");
     totalBait -= 1;
     document.getElementById('hidden-total-bait').value = totalBait;
     slotrole()

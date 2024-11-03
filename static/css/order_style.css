@@ -50,7 +50,7 @@
  }
  .tab-panel{
     background-color: #e2e8eb;
-    height: 170px;
+    height: 60vh;
     clear: both;
     display: none; /*パネルを非表示*/
  }
@@ -68,8 +68,9 @@
  }
 
 #order-section {
-    left: 0;
     position: absolute;
+    top: 18vh;
+    left: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3列のグリッド */
     gap: 10px;
@@ -95,10 +96,12 @@
 }
 
 .quantity-controls {
-    display: none;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    display: none;
+    height: 2em;
+    width: 5em;
+    top: 1em;
+    right: 1em;
     background: rgba(255, 255, 255, 0.8);
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -106,53 +109,10 @@
 }
 
 .quantity-controls button {
+    height: 1.5em;
     font-size: 16px;
     margin:  5px;
     cursor: pointer;
-}
-
-.bait-button {
-    position: fixed;
-    right: 1vw;
-    top: 38vh;
-    font-size: 2.5vh;
-    cursor: pointer;
-    background-color: #0b8fcc;
-    border: 3px solid #0b8fcc;
-    color: #ffffff;
-}
-
-.confirm-order-button {
-    position: fixed;
-    right: 1vw;
-    top: 65vh;
-    font-size: 2.5vh;
-    cursor: pointer;
-    border: 3px solid #b64040;
-    background-color: #b64040;
-    color: white;
-}
-
-.kaikei-button{
-    position: fixed;
-    right: 1vw;
-    top: 75vh;
-    font-size: 2.5vh;
-    cursor: pointer;
-    border: 3px solid #b64040;
-    background-color: #b64040;
-    color: white; 
-}
-
-.history-button{
-    position: fixed;
-    right: 1vw;
-    top: 55vh;
-    font-size: 2.5vh;
-    cursor: pointer;
-    border: 3px solid #3cc581;
-    background-color: #3cc581;
-    color: white; 
 }
 
 .title{
@@ -171,39 +131,58 @@
     margin-right: 1em;
 }
 
-.total-price{
-    position: fixed;
+.side-button-container{
+    position: absolute;
     top: 18vh;
     right: 1vw;
-    background-color: rgb(112, 112, 112);
-    color: rgb(255, 255, 255);
-    
 }
 
-.side-button{
-    width: 15vw;
-    height: 8vh;
-    border-radius: 0.8em;
-}
-
-.side-total{
+.side-button-container div,button{
+    position: relative;
     font-size: 2.5vh;
     width: 15vw;
     height: 9vh;
+    border-radius: 0.8em;
+    margin-bottom: 0.4em;
+    display: block
+}
+
+.side-total{
     box-sizing: border-box;
     padding: 0.2em;
     text-align: center;
-    border-radius: 0.8em;
+    background-color: rgb(112, 112, 112);
+    color: white;
     border: 5px solid #2b2b2b;
     border-style:ridge;
 }
 
-.total-bait {
-    top: 28vh;
-    position: fixed;
-    right: 1vw;
-    background-color: rgb(112, 112, 112);
+.bait-button {
+    cursor: pointer;
+    background-color: #0b8fcc;
+    border: 3px solid #0b8fcc;
+    color: #ffffff;
+}
+
+.history-button{
+    cursor: pointer;
+    border: 3px solid #3cc581;
+    background-color: #3cc581;
+    color: white; 
+}
+
+.confirm-order-button {
+    cursor: pointer;
+    border: 3px solid #b64040;
+    background-color: #b64040;
     color: white;
+}
+
+.kaikei-button{
+    cursor: pointer;
+    border: 3px solid #b64040;
+    background-color: #b64040;
+    color: white; 
 }
 
 #turi-total-bait{
@@ -213,16 +192,6 @@
     font-size: 1.5em;
     background-color: rgb(39, 129, 145);
     color: white;
-}
-
-.kakutei-button{
-    font-size: 18px;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
 }
 
 .slide-font{
@@ -238,20 +207,20 @@
 }
 
 .historyTableStyle th,table td{
-border-radius: 5px;
-text-align: center;
-padding: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+    padding: 10px 0;
 }
 
 .historyTableStyle th{
-background-color: #65c752;
-color: white;
-border:solid 1px #519241;
+    background-color: #65c752;
+    color: white;
+    border:solid 1px #519241;
 }
 
 .historyTableStyle td{
-background-color: #c7e4bc;
-border:solid 1px #88af85;
+    background-color: #c7e4bc;
+    border:solid 1px #88af85;
 }
 
 /* スライドメニューのスタイル */
@@ -355,60 +324,6 @@ border:solid 1px #88af85;
     z-index: 2; /* 魚のコンテナを前面に */
 }
 
-#hari-img {
-    position: fixed;
-    top: 35%;
-    transform: translateY(-50%);
-    z-index: 1; /* ハリを魚と文字の後ろに */
-    width: auto; /* 幅を設定 */
-    height: auto;
-}
-
-
-#caught-fish-text {
-    font-size: 24px;
-    margin-bottom: 5px;
-}
-
-#fish-img {
-    width: 300px;
-    height: auto;
-    display: block;
-    margin: 25px 25px;
-    opacity: 0;
-    animation: slide-up 2s ease-in-out forwards;
-}
-
-#mark-img{
-    width: 60px;
-    height: auto;
-    display: block;
-    margin: 25px 25px;
-    animation: slide-up 2s ease-in-out forwards;
-}
-
-#do_fishing {
-    position: fixed;
-    bottom: 10px;
-    right: 1vw;
-    font-size: 24px;
-    padding: 10px;
-    background-color: white;
-    border: 3px solid #000000;
-    cursor: pointer;
-}
-
-@keyframes slide-up {
-    from {
-        transform: translateY(70%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
 .container {
     position: absolute;
     text-align: center;
@@ -418,7 +333,7 @@ border:solid 1px #88af85;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     width: 80%;
     max-width: 600px;
-    top: 40%;
+    top: 30%;
     z-index: 15;
 }
 
@@ -452,7 +367,8 @@ border:solid 1px #88af85;
 }
 
 .stopButton, .startButton {
-    margin-top: 10px;
+    margin: 0 auto;
+    width: 10vw;
     padding: 12px 20px;
     font-size: 16px;
     font-weight: bold;
@@ -482,10 +398,11 @@ border:solid 1px #88af85;
 
 /*おすすめ画面のスタイル*/
 .recommend-item {
-    width: 300px;
-    height: 200px;
+    width: 80%;
+    height: auto;
     overflow: hidden;
     position: relative;
+    margin: 0 auto;
 }
 
 .recommend-item img {
@@ -513,10 +430,12 @@ border:solid 1px #88af85;
     opacity: 0;
 }
 .fade-in-left {
-    transform: translateX(100%);
+    transition: none!important;
+    transform: translateX(-100%);
     opacity: 1;
 }
 .fade-in-right {
-    transform: translateX(-100%);
+    transition: none!important;
+    transform: translateX(100%);
     opacity: 1;
 }
