@@ -9,7 +9,7 @@ from flask import Flask, request, render_template, session, jsonify
 from waitress import serve
 import threading
 
-env_Dobot = False #webappだけ動かすときはFalse
+env_Dobot = True #webappだけ動かすときはFalse
 
 # Initial value setting
 detection_img_size = 640 #square 640 * 640
@@ -23,7 +23,7 @@ initial_position = {"x" : 400, "y" : 0, "z" : 100, "r" : 0}
 catch_position_z = {"sushi" : 65, "plate" : 52}
 release_position = {"sushi" : {"x" : 200, "y" : -300, "z" : 150, "r" : 90},
                     "plate" : {"x" : 200, "y" : -300, "z" : 150, "r" : 90}}
-angles_of_servo = {"open" : 60, "sushi_close" : 135, "plate_close" : 100}
+angles_of_servo = {"open" : 60, "sushi_close" : 120, "plate_close" : 90}
 number_of_plates = 7
 thickness_of_plate = 4.25
 position_plate = {"x" : 300, "y" : 0}
@@ -33,7 +33,7 @@ sushis_to_get = {}
 detection_server_host = '127.0.0.1'
 detection_server_port = 55580
 dobot_server_host = '10.133.3.222'
-dobot_server_port = 7087
+dobot_server_port = 7084
 pico_server_host = '192.168.137.114'
 pico_server_port = 8851
 rpi4_server_host = '10.133.6.123'
@@ -219,6 +219,7 @@ def arm_control(response):
             print("lap_top - advance_one_plate")
             lane_control("advance_one_plate")
         else:
+            print("lap_top - advance_plate_for_guest")
             lane_control("advance_plate_for_guest")
             num_of_sushi_to_move = 0
 
@@ -233,7 +234,9 @@ def place_plate():
     client_sockets["dobot_client_sock"].wait(1000)
 
 def lane_control(lane_massege):
-    client_sockets["rpi4_client_sock"].sendall(f"{lane_massege}\n".encode('utf-8'))
+    client_sockets["rpi4_client_sock"].sendall(lane_massege.encode('utf-8'))
+    response = client_sockets["rpi4_client_sock"].recv(1024).decode('utf-8')
+    print(response)
 
 if __name__ == '__main__':
     if env_Dobot:

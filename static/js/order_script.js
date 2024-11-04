@@ -16,17 +16,20 @@ const money_sushis = {
     'たまご': 100
 };
 
-const recommend_sushi_paths = ["/static/images/recommend_uni.png",
-                               "/static/images/recommend_ikura.png"];
+const recommend_sushi_paths = {
+    "ウニ": "/static/images/recommend_uni.png",
+    "イクラ": "/static/images/recommend_ikura.png"
+};
 
 let currentIndex = 0;
 
 const recommendItem = document.getElementById("recommendItem");
 console.log(recommendItem);
 
-const recommend_images = recommend_sushi_paths.map(path => {
+const recommend_images = Object.entries(recommend_sushi_paths).map(([sushi, path]) => {
     const img = document.createElement("img");
     img.src = path;
+    img.addEventListener('click', () => orderRecommendSushi(sushi));
     recommendItem.appendChild(img);
     return img;
 });
@@ -94,6 +97,11 @@ function addBait() {
     updateDisplay();
     document.getElementById('hidden-total-price').value = totalPrice;
     document.getElementById('hidden-total-bait').value = totalBait;
+}
+
+function orderRecommendSushi(sushi){
+    document.getElementById("tab-a").checked = true;
+    toggleSushiOrder(sushi);
 }
 
 // 画像の切り替え関数

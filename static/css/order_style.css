@@ -139,12 +139,17 @@
 
 .side-button-container div,button{
     position: relative;
-    font-size: 2.5vh;
+    display: block;
     width: 15vw;
     height: 9vh;
     border-radius: 0.8em;
     margin-bottom: 0.4em;
-    display: block
+    font-size: 2.5vh;
+    color: white;
+}
+
+.side-button-container button{
+    cursor: pointer;
 }
 
 .side-total{
@@ -152,37 +157,33 @@
     padding: 0.2em;
     text-align: center;
     background-color: rgb(112, 112, 112);
-    color: white;
     border: 5px solid #2b2b2b;
     border-style:ridge;
 }
 
-.bait-button {
-    cursor: pointer;
-    background-color: #0b8fcc;
-    border: 3px solid #0b8fcc;
-    color: #ffffff;
-}
-
 .history-button{
-    cursor: pointer;
     border: 3px solid #3cc581;
     background-color: #3cc581;
-    color: white; 
+}
+
+.bait-button {
+    border: 3px solid #0b8fcc;
+    background-color: #0b8fcc;
+}
+
+.return-plate-button{
+    border: 3px solid #0b8fcc;
+    background-color: #0b8fcc;
 }
 
 .confirm-order-button {
-    cursor: pointer;
     border: 3px solid #b64040;
     background-color: #b64040;
-    color: white;
 }
 
 .kaikei-button{
-    cursor: pointer;
     border: 3px solid #b64040;
     background-color: #b64040;
-    color: white; 
 }
 
 #turi-total-bait{
