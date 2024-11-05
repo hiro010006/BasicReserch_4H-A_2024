@@ -247,7 +247,7 @@ function sendOrderData(orderData) {
 }
 
 
-
+/*
 // 釣り画面
 function fishTheSushi() {
     if (totalBait > 0) {
@@ -268,6 +268,7 @@ function fishTheSushi() {
         document.getElementById('fish-container').innerHTML = strOfP + strOfImg;
     }
 }
+*/
 
 const slots = [
     document.getElementById('slot1').getElementsByTagName('img')[0],

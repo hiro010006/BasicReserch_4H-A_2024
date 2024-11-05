@@ -47,6 +47,16 @@ sock_info = {"detection_client_sock" : [detection_server_host, detection_server_
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
+sushi_info = {
+    "maguro" : {"name" : {"jp" : "マグロ", "eng" : "Tuna"}, "price" : 300, "img_path" : "maguro.png"},
+    "ika" : {"name" : {"jp" : "イカ", "eng" : "Squid"}, "price" : 200, "img_path" : "ika.png"},
+    "ebi" : {"name" : {"jp" : "エビ", "eng" : "Shrimp"}, "price" : 250, "img_path" : "ebi.png"},
+    "ikura" : {"name" : {"jp" : "イクラ", "eng" : "Salmon Roe"}, "price" : 400, "img_path" : "ikura.png"},
+    "uni" : {"name" : {"jp" : "ウニ", "eng" : "Sea Urchin"}, "price" : 500, "img_path" : "uni.png"},
+    "tamago" : {"name" : {"jp" : "たまご", "eng" : "Rolled Omelette"}, "price" : 150, "img_path" : "tamago.png"},
+}
+
+"""
 orderable_sushis = ['マグロ', 'イカ', 'エビ', 'イクラ', 'ウニ', 'たまご']
 
 money_sushis = {
@@ -78,24 +88,26 @@ conversion_table = {
     'tamago' : 'たまご',
     'gomi' : 'ゴミ' 
 }
+"""
 
 @app.route('/')
 def order():
     total_price = session.get('total_price', 0)
     total_bait = session.get('total_bait', 0)
     
-    fishable_sushis_json = json.dumps(sushis)
-    fishable_sushis_img_json = json.dumps(fish_images)
+    #fishable_sushis_json = json.dumps(sushis)
+    #fishable_sushis_img_json = json.dumps(fish_images)
 
     return render_template('order.html',
-                           money_sushis=money_sushis, 
-                           orderable_sushis=orderable_sushis, 
+                           #money_sushis=money_sushis, 
+                           #orderable_sushis=orderable_sushis, 
                            total_price=total_price, 
                            total_bait=total_bait, 
-                           fish_images=fish_images, 
-                           sushis=sushis,
-                           fishable_sushis_json=fishable_sushis_json, 
-                           fishable_sushis_img_json=fishable_sushis_img_json)
+                           #fish_images=fish_images, 
+                           #sushis=sushis,
+                           #fishable_sushis_json=fishable_sushis_json, 
+                           #fishable_sushis_img_json=fishable_sushis_img_json
+                           )
 
 @app.route('/send_order', methods=['POST'])
 def send_order():
