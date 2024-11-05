@@ -351,10 +351,8 @@ function checkResult() {
     if (result[0] === result[1] && result[1] === result[2]) {
         document.getElementById('result').textContent = '大当たり！';
         atari.play();
-        let fishableSushis = JSON.parse(document.getElementById('hidden-fishable-sushis').value);
-        let fishableSushisImg = JSON.parse(document.getElementById('hidden-fishable-sushis-img').value);
-        var strOfP = `<p id="caught-fish-text">釣れた魚: maguro</p>`;
-        var strOfImg = `<img id="fish-img" src="/static/images/${result}" alt="釣れた魚">`;
+        var strOfP = `<p id="caught-fish-text">釣れた魚:</p>`;
+        var strOfImg = `<img src = "static/images/${result[0]}">`;
         document.getElementById('fish-container').innerHTML = strOfP + strOfImg;
     } else {
         document.getElementById('result').textContent = '残念！';

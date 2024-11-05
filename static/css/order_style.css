@@ -332,15 +332,9 @@
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-<<<<<<< HEAD
     width: 60vw;
     height: 40vh;
     top: 40%;
-=======
-    width: 80%;
-    max-width: 600px;
-    top: 30%;
->>>>>>> 44d6b894c21dc93a7d3ce3f151ca1092948c336a
     z-index: 15;
 }
 
@@ -391,24 +385,26 @@
     transform: scale(1.1);
 }
 
+.control{
+    display: flex;
+    justify-content: center; /* 水平方向の中央揃え */
+    gap: 1vw; /* ボタン間のスペース */
+    margin-top: 2vh;
+}
+
 .stopButton, .startButton {
-<<<<<<< HEAD
     position: relative;
     margin-top: 1.5vh;
     font-size: 2vh;
-=======
-    margin: 0 auto;
-    width: 10vw;
-    padding: 12px 20px;
-    font-size: 16px;
->>>>>>> 44d6b894c21dc93a7d3ce3f151ca1092948c336a
     font-weight: bold;
+    text-align: center;
     color: white;
     background-color: #4a90e2;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
+    padding: 0.8vh 0.8vw;
 }
 
 .stopButton:hover, .startButton:hover {
@@ -425,8 +421,6 @@
     font-weight: bold;
 }
 
-<<<<<<< HEAD
-=======
 /*おすすめ画面のスタイル*/
 .recommend-item {
     width: 80%;
@@ -470,4 +464,3 @@
     transform: translateX(100%);
     opacity: 1;
 }
->>>>>>> 44d6b894c21dc93a7d3ce3f151ca1092948c336a
