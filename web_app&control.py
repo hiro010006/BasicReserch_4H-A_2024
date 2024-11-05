@@ -9,7 +9,7 @@ from flask import Flask, request, render_template, session, jsonify
 from waitress import serve
 import threading
 
-env_Dobot = False #webappだけ動かすときはFalse
+env_Dobot = True #webappだけ動かすときはFalse
 
 # Initial value setting
 detection_img_size = 640 #square 640 * 640
@@ -20,20 +20,20 @@ diagonal_angle_views = math.radians(55)
 angles_of_view = {"horizontal" : diagonal_angle_views * cam_frame_size["x"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2)), 
                   "vertical" : diagonal_angle_views * cam_frame_size["y"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2))}
 initial_position = {"x" : 400, "y" : 0, "z" : 100, "r" : 0}
-catch_position_z = {"sushi" : 65, "plate" : 52}
-release_position = {"sushi" : {"x" : 200, "y" : -300, "z" : 150, "r" : 90},
-                    "plate" : {"x" : 200, "y" : -300, "z" : 150, "r" : 90}}
-angles_of_servo = {"open" : 60, "sushi_close" : 120, "plate_close" : 90}
 number_of_plates = 7
 thickness_of_plate = 4.25
 position_plate = {"x" : 300, "y" : 0}
+catch_position_z = {"sushi" : 65, "plate" : 52}
+release_position = {"sushi" : {"x" : 200, "y" : -300, "z" : 150, "r" : 0},
+                    "plate" : {"x" : 200, "y" : -300, "z" : 150, "r" : 0}}
+angles_of_servo = {"open" : 60, "sushi_close" : 135, "plate_close" : 100}
 sushis_to_get = {}
 
 # Details of each servers
 detection_server_host = '127.0.0.1'
 detection_server_port = 55580
-dobot_server_host = '10.133.3.222'
-dobot_server_port = 7084
+dobot_server_host = '10.133.4.122'
+dobot_server_port = 7085
 pico_server_host = '192.168.137.114'
 pico_server_port = 8851
 rpi4_server_host = '10.133.6.123'
@@ -43,6 +43,8 @@ client_sockets = {}
 sock_info = {"detection_client_sock" : [detection_server_host, detection_server_port],
              "pico_client_sock" : [pico_server_host, pico_server_port], 
              "rpi4_client_sock" : [rpi4_server_host, rpi4_server_port]}
+
+lang = "jp"
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -56,60 +58,18 @@ sushi_info = {
     "tamago" : {"name" : {"jp" : "たまご", "en" : "Rolled Omelette"}, "price" : 150, "img_path" : "tamago.png"},
 }
 
-"""
-orderable_sushis = ['マグロ', 'イカ', 'エビ', 'イクラ', 'ウニ', 'たまご']
-
-money_sushis = {
-    'マグロ': '300',
-    'イカ': '150',
-    'エビ': '200',
-    'イクラ': '400',
-    'ウニ': '500',
-    'たまご': '100'
-}
-
-sushis = ['マグロ', 'イカ', 'エビ', 'イクラ', 'ウニ', 'たまご', 'ゴミ']
-fish_images = {
-    'マグロ': 'maguro.png',
-    'イカ': 'ika.png',
-    'エビ': 'ebi.png',
-    'イクラ': 'ikura.png',
-    'ウニ': 'uni.png',
-    'たまご': 'tamago.png',
-    'ゴミ': 'gomi.png'
-}
-
-conversion_table = {
-    'maguro' : 'マグロ',
-    'ika' : 'イカ',
-    'ebi' : 'エビ',
-    'ikura' : 'イクラ' ,
-    'uni' : 'ウニ',
-    'tamago' : 'たまご',
-    'gomi' : 'ゴミ' 
-}
-"""
-
 @app.route('/')
 def order():
     total_price = session.get('total_price', 0)
     total_bait = session.get('total_bait', 0)
     
     sushi_info_json = json.dumps(sushi_info)
-    #fishable_sushis_json = json.dumps(sushis)
-    #fishable_sushis_img_json = json.dumps(fish_images)
 
     return render_template('order.html',
                            sushi_info=sushi_info,
                            sushi_info_json=sushi_info_json,
-                           #money_sushis=money_sushis, 
-                           #orderable_sushis=orderable_sushis, 
                            total_price=total_price, 
                            total_bait=total_bait, 
-                           #fish_images=fish_images, 
-                           #sushis=sushis,
-                           #fishable_sushis_json=fishable_sushis_json, 
-                           #fishable_sushis_img_json=fishable_sushis_img_json
                            )
 
 @app.route('/send_order', methods=['POST'])
@@ -125,6 +85,13 @@ def send_order():
 
     return jsonify({'status': 'Order sent to image detection program'}), 200
 
+@app.route('/accept_message', methods=['POST'])
+def return_plate():
+    data = request.get_json()  # 送信された JSON データを取得
+    if data.get("message") == "returnPlate": 
+        lane_control("collect_plate")
+        return jsonify({"status": "success", "message": "Plate returned successfully."})
+    return jsonify({"status": "error", "message": "Invalid action."}), 400
 
 # Function to process 
 def process_control():
@@ -144,7 +111,9 @@ def process_control():
                 print(f"No response from {detection_server_host}, retrying...")
                 continue
 
-            arm_control(response)
+            coord_data = pickle.loads(response)
+            send_position_table = coordinate_transformation(coord_data)
+            arm_control(send_position_table)
 
         except socket.timeout:
             print(f"Timeout from {detection_server_host}, retrying...")
@@ -188,16 +157,16 @@ def hand_control(angle):
     client_sockets["pico_client_sock"].sendall(f"{angle}\n".encode('utf-8'))
     response = client_sockets["pico_client_sock"].recv(1024).decode('utf-8')
     print(f"Server response: {response.strip()}")
-
-def arm_control(response):
+    
+def coordinate_transformation(coord_data):
     global sushis_to_get
-    send_position_table = []
-    num_of_sushi_to_move = 0
-    coord_data = pickle.loads(response)
+    position_table = []
+    if not coord_data:
+        print ("there are no coord_data")
+        return 0
     for item in coord_data:
         print(item)
-        """
-        if conversion_table[item["label"]] in sushis_to_get and sushis_to_get[conversion_table[item["label"]]] > 0:
+        if item["label"] in sushis_to_get and sushis_to_get[item["label"]] > 0:
             #画像中央を原点とした座標系に写す(-180 <= x_relative <= 180, -320 <= y_relative <= 320)
             x_relative = -((int(item['y1']) + int(item['y2'])) / 2 - (detection_img_size * (cam_frame_size["y"] / cam_frame_size["x"]) / 2))
             y_relative = (int(item['x1']) + int(item['x2'])) / 2 - (detection_img_size / 2)
@@ -216,14 +185,20 @@ def arm_control(response):
             if not ((position_to_send["x"] ** 2 + position_to_send["y"] ** 2) < (400 ** 2)):
                 print("out of the Dobot's range")
                 continue
-            sushis_to_get[conversion_table[item["label"]]] -= 1
+            sushis_to_get[item["label"]] -= 1
 
-            send_position_table.append(position_to_send)
-        """
+            position_table.append(position_to_send)
 
-    for position in send_position_table:
+    for sushi in sushis_to_get:
+            if sushis_to_get[sushi]:
+                print (f"{sushis_to_get[sushi]}個の{sushi_info[sushi]["name"][lang]}の在庫がありませんでした。")
+    return position_table
+
+def arm_control(position_table):
+    num_of_sushi_to_move = 0
+    for position in position_table:
         num_of_sushi_to_move += 1
-        print(len(send_position_table))
+        print(len(position_table))
         place_plate()
         client_sockets["dobot_client_sock"].jump_to(x = int(position["x"]), y = int(position["y"]), z = int(position["z"]), r = int(position["r"]))
         hand_control(angles_of_servo["sushi_close"])
@@ -232,7 +207,7 @@ def arm_control(response):
         client_sockets["dobot_client_sock"].jump_to(x = release_position["sushi"]["x"], y = release_position["sushi"]["y"], z = release_position["sushi"]["z"], r = release_position["sushi"]["r"])
         hand_control(angles_of_servo["open"])
 
-        if num_of_sushi_to_move < len(send_position_table):
+        if num_of_sushi_to_move < len(position_table):
             print("lap_top - advance_one_plate")
             lane_control("advance_one_plate")
         else:

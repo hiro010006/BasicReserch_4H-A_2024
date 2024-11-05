@@ -249,6 +249,19 @@ function sendOrderData(orderData) {
     .catch(error => console.error("Error sending order:", error));
 }
 
+function sendMessage(message) {
+    fetch('/accept_message',  {     
+       method: 'POST',
+       headers: {
+           'Content-Type': 'application/json'
+       },
+       body: JSON.stringify({ message: message })
+   })
+   .then(response => response.json())
+   .then(data => console.log("Order sent successfully:", data))
+   .catch(error => console.error("Error sending order:", error));
+}
+
 const slots = [
     document.getElementById('slot1').getElementsByTagName('img')[0],
     document.getElementById('slot2').getElementsByTagName('img')[0],
