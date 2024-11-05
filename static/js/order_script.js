@@ -7,14 +7,17 @@ const orderLimit = 3;
 var historyTable = [];
 let numOrder = 0;
 
-const money_sushis = {
-    'マグロ': 300,
-    'イカ': 150,
-    'エビ': 200,
-    'イクラ': 400,
-    'ウニ': 500,
-    'たまご': 100
-};
+let sushiInfo = JSON.parse(document.getElementById('hidden-sushi-info').value);
+
+// 言語設定を取得して日本語か英語の表示を切り替え
+const language = navigator.language.startsWith('ja') ? 'jp' : 'en';
+
+// sushi-nameクラスを持つ全ての要素を更新
+document.querySelectorAll('.sushi-name').forEach(function (element) {
+    const nameJP = element.getAttribute('data-sushi-name-jp');
+    const nameEN = element.getAttribute('data-sushi-name-en');
+    element.textContent = (language === 'jp') ? nameJP : nameEN;
+});
 
 const recommend_sushi_paths = {
     "ウニ": "/static/images/recommend_uni.png",
@@ -66,7 +69,7 @@ function toggleSushiOrder(sushi) {
 
 function increaseQuantity(sushi) {
     if (!order[sushi]) {
-        order[sushi] = { count: 0, price: money_sushis[sushi] };
+        order[sushi] = { count: 0, price: sushiInfo[sushi]["price"] };
     }
     if (currentOrderTotalSushiCount < orderLimit){
         order[sushi].count += 1;
@@ -245,30 +248,6 @@ function sendOrderData(orderData) {
     .then(data => console.log("Order sent successfully:", data))
     .catch(error => console.error("Error sending order:", error));
 }
-
-
-/*
-// 釣り画面
-function fishTheSushi() {
-    if (totalBait > 0) {
-        totalBait -= 1;
-        document.getElementById('hidden-total-bait').value = totalBait;
-        updateDisplay();
-
-        // JSONパース
-        let fishableSushis = JSON.parse(document.getElementById('hidden-fishable-sushis').value);
-        let fishableSushisImg = JSON.parse(document.getElementById('hidden-fishable-sushis-img').value);
-
-        var randomNum = Math.floor(Math.random() * fishableSushis.length);
-        var caughtFish = fishableSushis[randomNum];
-        var caughtFishImg = fishableSushisImg[caughtFish];
-        var strOfP = `<p id="caught-fish-text">釣れた魚: ${caughtFish}</p>`;
-        var strOfImg = `<img id="fish-img" src="/static/images/${caughtFishImg}" alt="釣れた魚">`;
-
-        document.getElementById('fish-container').innerHTML = strOfP + strOfImg;
-    }
-}
-*/
 
 const slots = [
     document.getElementById('slot1').getElementsByTagName('img')[0],

@@ -16,18 +16,19 @@
     <div class="tab-panel panel-a" role="tabpanel">
         <div id="tabpanel-order">
             <div id="order-section">
-                {% for sushi in orderable_sushis %}
+                {% for sushi_key, sushi_data in sushi_info.items() %}
                     <div class="sushi-item">
-                        <button class="sushi-button" onclick="toggleSushiOrder('{{ sushi }}')">
-                            <img src="{{ url_for('static', filename='images/' + fish_images[sushi]) }}" style="height: 15vh; width: auto;">
-                            <p class="money-name" data-sushi-price={{ money_sushis[sushi] }}>{{money_sushis[sushi]}}円</p> 
-                            <p class="sushi-name">{{ sushi }}</p> <!-- クラスを追加して配置を調整 -->
-                            
+                        <button class="sushi-button" onclick="toggleSushiOrder('{{ sushi_key }}')">
+                            <img src="{{ url_for('static', filename='images/' + sushi_data['img_path']) }}" style="height: 15vh; width: auto;">
+                            <p class="money-name" data-sushi-price="{{ sushi_data['price'] }}">{{ sushi_data['price'] }}円</p>
+                            <p class="sushi-name" data-sushi-name-jp="{{ sushi_data['name']['jp'] }}" data-sushi-name-en="{{ sushi_data['name']['en'] }}">
+                                {{ sushi_data['name']['jp'] }}
+                            </p>
                         </button>
-                        <div class="quantity-controls" id="controls-{{ sushi }}">
-                            <button onclick="decreaseQuantity('{{ sushi }}')">-</button>
-                            <span id="quantity-{{ sushi }}">0</span>
-                            <button onclick="increaseQuantity('{{ sushi }}')">+</button>
+                        <div class="quantity-controls" id="controls-{{ sushi_key }}">
+                            <button onclick="decreaseQuantity('{{ sushi_key }}')">-</button>
+                            <span id="quantity-{{ sushi_key }}">0</span>
+                            <button onclick="increaseQuantity('{{ sushi_key }}')">+</button>
                         </div>
                     </div>
                 {% endfor %}
@@ -111,9 +112,12 @@
             </div>
             <div id="turi-total-bait">釣り餌の数: {{ total_bait }}</div>
             <!-- hidden inputのvalueに直接JSONを埋め込む -->
+            <!--
             <input type="hidden" id="hidden-fishable-sushis" value='{{ fishable_sushis_json }}'>
             <input type="hidden" id="hidden-fishable-sushis-img" value='{{ fishable_sushis_img_json }}'>
+            -->
 
+            <input type="hidden" id="hidden-sushi-info" value='{{ sushi_info_json }}'>
             <input type="hidden" name="total_bait" id="hidden-total-bait" value="{{ total_bait }}">
             <input type="hidden" name="total_price" id="hidden-total-price" value="{{ total_price }}">
             
@@ -121,8 +125,7 @@
     </div>
 
     <div class="tab-panel panel-c" role="tabpanel">
-    <div class = "recommend-item" id = "recommendItem">
-    </div>
+    <div class = "recommend-item" id = "recommendItem"></div>
     </div>
     
     <script src="{{ url_for('static', filename='js/order_script.js') }}" defer></script>

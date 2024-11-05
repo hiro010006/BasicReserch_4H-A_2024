@@ -9,7 +9,7 @@ from flask import Flask, request, render_template, session, jsonify
 from waitress import serve
 import threading
 
-env_Dobot = True #webappだけ動かすときはFalse
+env_Dobot = False #webappだけ動かすときはFalse
 
 # Initial value setting
 detection_img_size = 640 #square 640 * 640
@@ -48,12 +48,12 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 sushi_info = {
-    "maguro" : {"name" : {"jp" : "マグロ", "eng" : "Tuna"}, "price" : 300, "img_path" : "maguro.png"},
-    "ika" : {"name" : {"jp" : "イカ", "eng" : "Squid"}, "price" : 200, "img_path" : "ika.png"},
-    "ebi" : {"name" : {"jp" : "エビ", "eng" : "Shrimp"}, "price" : 250, "img_path" : "ebi.png"},
-    "ikura" : {"name" : {"jp" : "イクラ", "eng" : "Salmon Roe"}, "price" : 400, "img_path" : "ikura.png"},
-    "uni" : {"name" : {"jp" : "ウニ", "eng" : "Sea Urchin"}, "price" : 500, "img_path" : "uni.png"},
-    "tamago" : {"name" : {"jp" : "たまご", "eng" : "Rolled Omelette"}, "price" : 150, "img_path" : "tamago.png"},
+    "maguro" : {"name" : {"jp" : "マグロ", "en" : "Tuna"}, "price" : 300, "img_path" : "maguro.png"},
+    "ika" : {"name" : {"jp" : "イカ", "en" : "Squid"}, "price" : 200, "img_path" : "ika.png"},
+    "ebi" : {"name" : {"jp" : "エビ", "en" : "Shrimp"}, "price" : 250, "img_path" : "ebi.png"},
+    "ikura" : {"name" : {"jp" : "イクラ", "en" : "Salmon Roe"}, "price" : 400, "img_path" : "ikura.png"},
+    "uni" : {"name" : {"jp" : "ウニ", "en" : "Sea Urchin"}, "price" : 500, "img_path" : "uni.png"},
+    "tamago" : {"name" : {"jp" : "たまご", "en" : "Rolled Omelette"}, "price" : 150, "img_path" : "tamago.png"},
 }
 
 """
@@ -95,10 +95,13 @@ def order():
     total_price = session.get('total_price', 0)
     total_bait = session.get('total_bait', 0)
     
+    sushi_info_json = json.dumps(sushi_info)
     #fishable_sushis_json = json.dumps(sushis)
     #fishable_sushis_img_json = json.dumps(fish_images)
 
     return render_template('order.html',
+                           sushi_info=sushi_info,
+                           sushi_info_json=sushi_info_json,
                            #money_sushis=money_sushis, 
                            #orderable_sushis=orderable_sushis, 
                            total_price=total_price, 
@@ -193,6 +196,7 @@ def arm_control(response):
     coord_data = pickle.loads(response)
     for item in coord_data:
         print(item)
+        """
         if conversion_table[item["label"]] in sushis_to_get and sushis_to_get[conversion_table[item["label"]]] > 0:
             #画像中央を原点とした座標系に写す(-180 <= x_relative <= 180, -320 <= y_relative <= 320)
             x_relative = -((int(item['y1']) + int(item['y2'])) / 2 - (detection_img_size * (cam_frame_size["y"] / cam_frame_size["x"]) / 2))
@@ -215,6 +219,7 @@ def arm_control(response):
             sushis_to_get[conversion_table[item["label"]]] -= 1
 
             send_position_table.append(position_to_send)
+        """
 
     for position in send_position_table:
         num_of_sushi_to_move += 1
