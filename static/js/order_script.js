@@ -280,20 +280,31 @@ let slotTimers = [];
 let isSpinning = [false, false, false]; // 各リールの状態を管理
 let speeds = [initialSpeed, initialSpeed, initialSpeed]; // 各リールのスピードを独立して管理
 
+var role = new Audio("/static/music/roling.mp3");
+var atari = new Audio("/static/music/omedetou.mp3");
+var hazure = new Audio("/static/music/hazure.mp3");
+var stopRole = new Audio("/static/music/stop.mp3");
+var start = new Audio("/static/music/start.mp3");
+role.volume -= 0.5;
+start.volume -= 0.7;
+
 //スロットを開始する時に餌を消費するのとスロット中に回しなおしができないようにする
 function startSlot(){
-if (totalBait > 0 && !isSpinning.includes(true)) {
-    console.log("start slot");
-    totalBait -= 1;
-    document.getElementById('hidden-total-bait').value = totalBait;
-    slotrole()
-    updateDisplay();
-}
+    if (totalBait > 0 && !isSpinning.includes(true)) {
+        console.log("start slot");
+        totalBait -= 1;
+        document.getElementById('hidden-total-bait').value = totalBait;
+        slotrole()
+        updateDisplay();
+    }
 }
 
 // スロットを開始する関数
 function slotrole() {
     document.getElementById('result').textContent = ''; // 結果をクリア
+    start.play();
+    role.play();
+    role.loop = true;
     for (let i = 0; i < slots.length; i++) {
         if (!isSpinning[i]) {
             isSpinning[i] = true;
@@ -308,6 +319,9 @@ function slotrole() {
 // スロットを停止する関数（リールごと）
 function stopSlot(reelIndex) {
     if (isSpinning[reelIndex]) {
+        stopRole.pause();
+        stopRole.currentTime=0;
+        stopRole.play();
         clearInterval(slotTimers[reelIndex]);
         isSpinning[reelIndex] = false;
 
@@ -315,7 +329,7 @@ function stopSlot(reelIndex) {
         for (let i = 0; i < slots.length; i++) {
             if (isSpinning[i]) {
                 // スピードを増やして遅くする
-                speeds[i] += 200;
+                speeds[i] += 300;
                 clearInterval(slotTimers[i]); // 既存のタイマーをクリア
                 slotTimers[i] = setInterval(() => {
                     slots[i].src = symbols[Math.floor(Math.random() * symbols.length)];
@@ -332,11 +346,19 @@ function stopSlot(reelIndex) {
 
 // 結果の判定関数
 function checkResult() {
+    role.pause();
     const result = slots.map(slot => slot.src.split('/').pop()); // 画像ファイル名を取得
     if (result[0] === result[1] && result[1] === result[2]) {
         document.getElementById('result').textContent = '大当たり！';
+        atari.play();
+        let fishableSushis = JSON.parse(document.getElementById('hidden-fishable-sushis').value);
+        let fishableSushisImg = JSON.parse(document.getElementById('hidden-fishable-sushis-img').value);
+        var strOfP = `<p id="caught-fish-text">釣れた魚: maguro</p>`;
+        var strOfImg = `<img id="fish-img" src="/static/images/${result}" alt="釣れた魚">`;
+        document.getElementById('fish-container').innerHTML = strOfP + strOfImg;
     } else {
         document.getElementById('result').textContent = '残念！';
+        hazure.play();
     }
 }
 
