@@ -5,16 +5,54 @@ let currentOrderTotalSushiCount = 0;
 let order = {};
 const orderLimit = 3;
 var historyTable = [];
-let numOrder = 0;;
+let numOrder = 0;
 
-const money_sushis = {
-    'マグロ': 300,
-    'イカ': 150,
-    'エビ': 200,
-    'イクラ': 400,
-    'ウニ': 500,
-    'たまご': 100
-}
+let sushiInfo = JSON.parse(document.getElementById('hidden-sushi-info').value);
+
+// 言語設定を取得して日本語か英語の表示を切り替え
+const language = navigator.language.startsWith('ja') ? 'jp' : 'en';
+
+// sushi-nameクラスを持つ全ての要素を更新
+document.querySelectorAll('.sushi-name').forEach(function (element) {
+    const nameJP = element.getAttribute('data-sushi-name-jp');
+    const nameEN = element.getAttribute('data-sushi-name-en');
+    element.textContent = (language === 'jp') ? nameJP : nameEN;
+});
+
+const recommend_sushi_paths = {
+    "ウニ": "/static/images/recommend_uni.png",
+    "イクラ": "/static/images/recommend_ikura.png"
+};
+
+let currentIndex = 0;
+
+const recommendItem = document.getElementById("recommendItem");
+console.log(recommendItem);
+
+const recommend_images = Object.entries(recommend_sushi_paths).map(([sushi, path]) => {
+    const img = document.createElement("img");
+    img.src = path;
+    img.addEventListener('click', () => orderRecommendSushi(sushi));
+    recommendItem.appendChild(img);
+    return img;
+});
+recommend_images[currentIndex].classList.add("active");
+
+// 10秒ごとに自動でスライドさせる
+setInterval(() => {
+    changeImage("left");
+}, 10000);
+
+let startX = 0;
+recommendItem.addEventListener("touchstart", (event) => {
+    startX = event.touches[0].clientX;
+});
+
+recommendItem.addEventListener("touchend", (event) => {
+    const endX = event.changedTouches[0].clientX;
+    const direction = endX < startX ? "left" : "right";
+    changeImage(direction);
+});
 
 window.onload = function() {
     updateDisplay(); // これにより0が表示されるのを防ぎます
@@ -31,7 +69,7 @@ function toggleSushiOrder(sushi) {
 
 function increaseQuantity(sushi) {
     if (!order[sushi]) {
-        order[sushi] = { count: 0, price: money_sushis[sushi] };
+        order[sushi] = { count: 0, price: sushiInfo[sushi]["price"] };
     }
     if (currentOrderTotalSushiCount < orderLimit){
         order[sushi].count += 1;
@@ -62,7 +100,45 @@ function addBait() {
     updateDisplay();
     document.getElementById('hidden-total-price').value = totalPrice;
     document.getElementById('hidden-total-bait').value = totalBait;
-    document.getElementById('start-fishing').disabled = false;
+}
+
+function orderRecommendSushi(sushi){
+    document.getElementById("tab-a").checked = true;
+    toggleSushiOrder(sushi);
+}
+
+// 画像の切り替え関数
+function changeImage(direction) {
+    const currentImage = recommend_images[currentIndex];
+    currentImage.classList.remove("active");
+
+    // フェードアウトアニメーションの追加
+    if (direction === "left") {
+        currentImage.classList.add("fade-out-left");
+    } else {
+        currentImage.classList.add("fade-out-right");
+    }
+
+    // 次の画像のインデックスを計算
+    currentIndex = (direction === "left")
+        ? (currentIndex + 1) % recommend_images.length
+        : (currentIndex - 1 + recommend_images.length) % recommend_images.length;
+
+    const nextImage = recommend_images[currentIndex];
+
+    // フェードインアニメーションの追加
+    if (direction === "left") {
+        nextImage.classList.add("fade-in-right");
+    } else {
+        nextImage.classList.add("fade-in-left");
+    }
+    nextImage.classList.add("active");
+
+    // アニメーション後にクラスをリセット
+    setTimeout(() => {
+        currentImage.classList.remove("fade-out-left", "fade-out-right","fade-in-left", "fade-in-right");
+        nextImage.classList.remove("fade-out-left", "fade-out-right","fade-in-left", "fade-in-right");
+    }, 500);
 }
 
 function updateDisplay() {
@@ -173,27 +249,17 @@ function sendOrderData(orderData) {
     .catch(error => console.error("Error sending order:", error));
 }
 
-
-
-// 釣り画面
-function fishTheSushi() {
-    if (totalBait > 0) {
-        totalBait -= 1;
-        document.getElementById('hidden-total-bait').value = totalBait;
-        updateDisplay();
-
-        // JSONパース
-        let fishableSushis = JSON.parse(document.getElementById('hidden-fishable-sushis').value);
-        let fishableSushisImg = JSON.parse(document.getElementById('hidden-fishable-sushis-img').value);
-
-        var randomNum = Math.floor(Math.random() * fishableSushis.length);
-        var caughtFish = fishableSushis[randomNum];
-        var caughtFishImg = fishableSushisImg[caughtFish];
-        var strOfP = `<p id="caught-fish-text">釣れた魚: ${caughtFish}</p>`;
-        var strOfImg = `<img id="fish-img" src="/static/images/${caughtFishImg}" alt="釣れた魚">`;
-
-        document.getElementById('fish-container').innerHTML = strOfP + strOfImg;
-    }
+function sendMessage(message) {
+    fetch('/accept_message',  {     
+       method: 'POST',
+       headers: {
+           'Content-Type': 'application/json'
+       },
+       body: JSON.stringify({ message: message })
+   })
+   .then(response => response.json())
+   .then(data => console.log("Order sent successfully:", data))
+   .catch(error => console.error("Error sending order:", error));
 }
 
 const slots = [
@@ -214,19 +280,31 @@ let slotTimers = [];
 let isSpinning = [false, false, false]; // 各リールの状態を管理
 let speeds = [initialSpeed, initialSpeed, initialSpeed]; // 各リールのスピードを独立して管理
 
+var role = new Audio("/static/music/roling.mp3");
+var atari = new Audio("/static/music/omedetou.mp3");
+var hazure = new Audio("/static/music/hazure.mp3");
+var stopRole = new Audio("/static/music/stop.mp3");
+var start = new Audio("/static/music/start.mp3");
+role.volume -= 0.5;
+start.volume -= 0.7;
+
 //スロットを開始する時に餌を消費するのとスロット中に回しなおしができないようにする
 function startSlot(){
-if (totalBait > 0 && !isSpinning.includes(true)) {
-    totalBait -= 1;
-    document.getElementById('hidden-total-bait').value = totalBait;
-    slotrole()
-    updateDisplay();
-}
+    if (totalBait > 0 && !isSpinning.includes(true)) {
+        console.log("start slot");
+        totalBait -= 1;
+        document.getElementById('hidden-total-bait').value = totalBait;
+        slotrole()
+        updateDisplay();
+    }
 }
 
 // スロットを開始する関数
 function slotrole() {
     document.getElementById('result').textContent = ''; // 結果をクリア
+    start.play();
+    role.play();
+    role.loop = true;
     for (let i = 0; i < slots.length; i++) {
         if (!isSpinning[i]) {
             isSpinning[i] = true;
@@ -241,6 +319,9 @@ function slotrole() {
 // スロットを停止する関数（リールごと）
 function stopSlot(reelIndex) {
     if (isSpinning[reelIndex]) {
+        stopRole.pause();
+        stopRole.currentTime=0;
+        stopRole.play();
         clearInterval(slotTimers[reelIndex]);
         isSpinning[reelIndex] = false;
 
@@ -248,7 +329,7 @@ function stopSlot(reelIndex) {
         for (let i = 0; i < slots.length; i++) {
             if (isSpinning[i]) {
                 // スピードを増やして遅くする
-                speeds[i] += 200;
+                speeds[i] += 300;
                 clearInterval(slotTimers[i]); // 既存のタイマーをクリア
                 slotTimers[i] = setInterval(() => {
                     slots[i].src = symbols[Math.floor(Math.random() * symbols.length)];
@@ -265,11 +346,19 @@ function stopSlot(reelIndex) {
 
 // 結果の判定関数
 function checkResult() {
+    role.pause();
     const result = slots.map(slot => slot.src.split('/').pop()); // 画像ファイル名を取得
     if (result[0] === result[1] && result[1] === result[2]) {
         document.getElementById('result').textContent = '大当たり！';
+        atari.play();
+        let fishableSushis = JSON.parse(document.getElementById('hidden-fishable-sushis').value);
+        let fishableSushisImg = JSON.parse(document.getElementById('hidden-fishable-sushis-img').value);
+        var strOfP = `<p id="caught-fish-text">釣れた魚: maguro</p>`;
+        var strOfImg = `<img id="fish-img" src="/static/images/${result}" alt="釣れた魚">`;
+        document.getElementById('fish-container').innerHTML = strOfP + strOfImg;
     } else {
         document.getElementById('result').textContent = '残念！';
+        hazure.play();
     }
 }
 
