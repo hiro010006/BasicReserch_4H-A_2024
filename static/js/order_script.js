@@ -328,7 +328,7 @@ function stopSlot(reelIndex) {
         for (let i = 0; i < slots.length; i++) {
             if (isSpinning[i]) {
                 // スピードを増やして遅くする
-                speeds[i] += 400;
+                speeds[i] +=250;
                 clearInterval(slotTimers[i]); // 既存のタイマーをクリア
                 slotTimers[i] = setInterval(() => {
                     slots[i].src = symbols[Math.floor(Math.random() * symbols.length)];
@@ -347,7 +347,9 @@ function stopSlot(reelIndex) {
 function checkResult() {
     const result = slots.map(slot => slot.src.split('/').pop()); // 画像ファイル名を取得
     let caughtClose = document.getElementById('fish-close');
+    let gomiClose = document.getElementById('gomi-close');
     caughtClose.style.display = 'block';
+    gomiClose.style.display = 'block';
     if (result[0] === result[1] && result[1] === result[2]) {
         atari.play();
 
@@ -359,17 +361,19 @@ function checkResult() {
     } else {
         hazure.play();
 
-        let fishContainer = document.getElementById('fish-container');
-        let slotResultImg = document.getElementById('slot-result-img');
+        let gomiContainer = document.getElementById('gomi-container');
+        let gomiResultImg = document.getElementById('gomi-result-img');
 
-        fishContainer.style.display = 'block';
-        slotResultImg.src = `/static/images/gomi.png`;
+        gomiContainer.style.display = 'block';
+        gomiResultImg.src = `/static/images/gomi.png`;
     }
 }
 
 function closeFishContainer(){
     let fishContainer = document.getElementById('fish-container');
+    let gomiContainer = document.getElementById('gomi-container');
     fishContainer.style.display = 'none';
+    gomiContainer.style.display = 'none';
 }
 
 
