@@ -6,6 +6,7 @@ let order = {};
 const orderLimit = 3;
 var historyTable = [];
 let numOrder = 0;
+lang = "jp"
 
 let sushiInfo = JSON.parse(document.getElementById('hidden-sushi-info').value);
 
@@ -161,10 +162,10 @@ function updateOrderSummary() {
     orderSummary.innerHTML = '';
     let total = 0;
 
-    for (let sushi in order) {
+        for (let sushi in order) {
         if (order[sushi].count > 0) {
             let item = document.createElement('div');
-            item.innerText = `${sushi} x ${order[sushi].count} - ¥${order[sushi].price * order[sushi].count}`;
+            item.innerText = `${sushiInfo[sushi]["name"][lang]} x ${order[sushi].count} - ¥${order[sushi].price * order[sushi].count}`;
             orderSummary.appendChild(item);
             total += order[sushi].price * order[sushi].count;
         }
@@ -186,7 +187,7 @@ function updateHistorySummary() {
         for (let sushi in historyTable[items]) {
             if (historyTable[items][sushi].count > 0) {
                 let item = document.createElement('td');
-                item.textContent = `${sushi} x ${historyTable[items][sushi].count}`;
+                item.textContent = `${sushiInfo[sushi]["name"][lang]} x ${historyTable[items][sushi].count}`;
                 item.classList.add('historyItemStyle');
                 historyTimes.appendChild(item);
             }
@@ -303,8 +304,6 @@ function startSlot(){
 function slotrole() {
     document.getElementById('result').textContent = ''; // 結果をクリア
     start.play();
-    role.play();
-    role.loop = true;
     for (let i = 0; i < slots.length; i++) {
         if (!isSpinning[i]) {
             isSpinning[i] = true;
@@ -329,7 +328,7 @@ function stopSlot(reelIndex) {
         for (let i = 0; i < slots.length; i++) {
             if (isSpinning[i]) {
                 // スピードを増やして遅くする
-                speeds[i] += 300;
+                speeds[i] += 400;
                 clearInterval(slotTimers[i]); // 既存のタイマーをクリア
                 slotTimers[i] = setInterval(() => {
                     slots[i].src = symbols[Math.floor(Math.random() * symbols.length)];
@@ -346,19 +345,34 @@ function stopSlot(reelIndex) {
 
 // 結果の判定関数
 function checkResult() {
-    role.pause();
     const result = slots.map(slot => slot.src.split('/').pop()); // 画像ファイル名を取得
+    let caughtClose = document.getElementById('fish-close');
+    caughtClose.style.display = 'block';
     if (result[0] === result[1] && result[1] === result[2]) {
-        document.getElementById('result').textContent = '大当たり！';
         atari.play();
-        var strOfP = `<p id="caught-fish-text">釣れた魚:</p>`;
-        var strOfImg = `<img src = "static/images/${result[0]}">`;
-        document.getElementById('fish-container').innerHTML = strOfP + strOfImg;
+
+        let fishContainer = document.getElementById('fish-container');
+        let slotResultImg = document.getElementById('slot-result-img');
+
+        fishContainer.style.display = 'block';
+        slotResultImg.src = `/static/images/${result[0]}`;
     } else {
-        document.getElementById('result').textContent = '残念！';
         hazure.play();
+
+        let fishContainer = document.getElementById('fish-container');
+        let slotResultImg = document.getElementById('slot-result-img');
+
+        fishContainer.style.display = 'block';
+        slotResultImg.src = `/static/images/gomi.png`;
     }
 }
+
+function closeFishContainer(){
+    let fishContainer = document.getElementById('fish-container');
+    fishContainer.style.display = 'none';
+}
+
+
 
 // イベントリスナーをボタンに追加
 document.getElementById('startButton').addEventListener('click', startSlot);

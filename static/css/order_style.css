@@ -137,7 +137,7 @@
     right: 1vw;
 }
 
-.side-button-container div,button{
+.side-button-container div,.side-button-container button{
     position: relative;
     display: block;
     width: 15vw;
@@ -316,13 +316,38 @@
 }
 
 #fish-container {
+    display: none;
     text-align: center;
-    margin-top: 20px;
-    position: fixed;
-    bottom: 30%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2; /* 魚のコンテナを前面に */
+    position: absolute;
+    width: 60vw;
+    height: 50vh;
+    top: 25%;
+    margin: 0 auto;
+    padding: 20px;
+    z-index: 20; /* 魚のコンテナを前面に */
+    background: linear-gradient(to right,#ffbb28 ,#ff3737,#ffbb28 ,#ff3737,#ffbb28 ,#ff3737,#ffbb28 ,#ff3737,#ffbb28 ,#ff3737);
+    border-radius: 15px;
+    border: 5px solid #ffffff;
+}
+
+#slot-result-img{
+    width: 30vw;
+    height: 30vh;
+}
+
+.fish-container-close{
+    position: relative;
+    font-size: 3vh;
+    padding: 0.3em;
+    background-color: #ec5b5b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#caught-name{
+    font-size: 3vh;
 }
 
 .container {
@@ -334,7 +359,7 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     width: 60vw;
     height: 40vh;
-    top: 40%;
+    top: 35%;
     z-index: 15;
 }
 
@@ -386,14 +411,13 @@
 }
 
 .control{
-    display: flex;
     justify-content: center; /* 水平方向の中央揃え */
     gap: 1vw; /* ボタン間のスペース */
-    margin-top: 2vh;
 }
 
 .stopButton, .startButton {
     position: relative;
+    margin: 0 auto;
     margin-top: 1.5vh;
     font-size: 2vh;
     font-weight: bold;
@@ -415,8 +439,7 @@
 
 #result {
     position: relative;
-    font-size: 20px;
-    margin-top: 20px;
+    font-size: 3vh;
     color: #333;
     font-weight: bold;
 }
