@@ -279,6 +279,8 @@ var hazure = new Audio("/static/music/hazure.mp3");
 var stopRole = new Audio("/static/music/stop.mp3");
 var start = new Audio("/static/music/start.mp3");
 var reach = new Audio("/static/music/reach.mp3");
+var kyuin = new Audio("/static/music/kyuin.mp3");
+var loop = new Audio("/static/music/loop.mp3");
 let startDel = document.getElementById('startButton');
 let slotRole1 = document.getElementById('slotbox1');
 let slotRole2 = document.getElementById('slotbox2');
@@ -288,6 +290,7 @@ let stopButton2 = document.getElementById('stopButton2');
 let stopButton3 = document.getElementById('stopButton3');
 role.volume -= 0.5;
 start.volume -= 0.7;
+loop.volume -= 0.2;
 
 //スロットを開始する時に餌を消費するのとスロット中に回しなおしができないようにする
 function startSlot(){
@@ -305,24 +308,15 @@ function slotrole() {
     let sushiKeys = Object.keys(sushiInfo);
     let startDel = document.getElementById('startButton');
     let slotContainer = document.getElementById('slotContainer');
-    /*
-    let slotRole1 = document.getElementById('slotbox1');
-    let slotRole2 = document.getElementById('slotbox2');
-    let slotRole3 = document.getElementById('slotbox3');
-    */
     startDel.style.display = 'none';
     slotContainer.style.display = 'flex';
-    /*
-    slotRole1.style.display = 'block';
-    slotRole2.style.display = 'block';
-    slotRole3.style.display = 'block';
     let stopButton1 = document.getElementById('stopButton1');
     let stopButton2 = document.getElementById('stopButton2');
     let stopButton3 = document.getElementById('stopButton3');
     stopButton1.style.display = 'block';
     stopButton2.style.display = 'block';
     stopButton3.style.display = 'block';
-    */
+
     document.getElementById('result').textContent = ''; // 結果をクリア
     start.play();
     for (let i = 0; i < slots.length; i++) {
@@ -341,14 +335,14 @@ let firstReelImage = null;  // 1回目に停止したリールの画像
 var index;
 var random;
 var symbolsReelImage;
-var firstSlot;
-var secondSlot;
-var thirdSlot;
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 // スロットを停止する関数（リールごと）
 async function stopSlot(reelIndex) {
+    var firstSlot;
+    var secondSlot;
+    var thirdSlot;
     stoppedReels = 0;
     stopRole.pause();
     stopRole.currentTime=0;
@@ -366,9 +360,9 @@ async function stopSlot(reelIndex) {
             firstSlot = stoppedReelImage;
         }
 
-        if (stoppedReels == 2 && Math.random() < 0.7){
+        if (stoppedReels == 2 && Math.random() < 1){
             let stopButton2 = document.getElementById(`stopButton${reelIndex + 1}`);
-            stopButton2.style.display = 'none'
+            stopButton2.style.display = 'none';
             reach.pause();
             reach.currentTime=0;
             reach.play();
@@ -377,7 +371,7 @@ async function stopSlot(reelIndex) {
         }else{
             if (stoppedReels == 2){
                 let stopButton2 = document.getElementById(`stopButton${reelIndex + 1}`);
-                stopButton2.style.display = 'none'
+                stopButton2.style.display = 'none';
                 let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
                 index = imgPaths;
                 index = imgPaths.filter(x=> x !== firstReelImage);
@@ -390,12 +384,12 @@ async function stopSlot(reelIndex) {
 
         if (stoppedReels == 3 && Math.random() <0){
             let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
-            stopButton3.style.display = 'none'
+            stopButton3.style.display = 'none';
             slots[reelIndex].src = `/static/images/${firstReelImage}`;
         }else{
+            let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
+            stopButton3.style.display = 'none';
             if (stoppedReels == 3 && firstSlot == secondSlot){
-                let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
-                stopButton3.style.display = 'none'
                 let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
                 index = imgPaths;
                 index = imgPaths.filter(x=> x !== firstReelImage);
@@ -404,15 +398,26 @@ async function stopSlot(reelIndex) {
                 slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
                 if(stoppedReels == 3 && Math.random() < 1) {
                     await delay(1000);
+                    kyuin.pause();
+                    kyuin.currentTime=0;
+                    kyuin.play();
+                    await delay(1000);
                     for (let i = 0; i < 10; i++) {
-                        slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
-                        await delay(100);
+                        loop.pause();
+                        loop.currentTime=0;
+                        loop.play();
                         slots[reelIndex].src = `/static/images/${firstReelImage}`;
+                        await delay(100);
+                        slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
                         await delay(100);
                     }
                     await delay(1000);
-                    if(Math.random() < 0.9){
+                    if(Math.random() < 1){
                         slots[reelIndex].src = `/static/images/${firstReelImage}`;
+                        stopRole.pause();
+                        stopRole.currentTime=0;
+                        stopRole.play();
+                    }else{
                         stopRole.pause();
                         stopRole.currentTime=0;
                         stopRole.play();
@@ -420,6 +425,9 @@ async function stopSlot(reelIndex) {
                 }
             }
 
+        }
+        if (stoppedReels == 3 && firstSlot !== secondSlot !== thirdSlot){
+            
         }
     }
     // 全てのリールが停止したら結果を判定
@@ -439,23 +447,15 @@ function checkResult() {
     caughtClose.style.display = 'block';
     gomiClose.style.display = 'block';
     startDel.style.display = 'block';
-    let slotRole1 = document.getElementById('slotbox1');
-    let slotRole2 = document.getElementById('slotbox2');
-    let slotRole3 = document.getElementById('slotbox3');
-    slotRole1.style.display = 'none';
-    slotRole2.style.display = 'none';
-    slotRole3.style.display = 'none';
-  
-    let stopButton2 = document.getElementById('stopButton2');
-    let stopButton3 = document.getElementById('stopButton3');
-
-    stopButton2.style.display = 'none';
-    stopButton3.style.display = 'none';
+    let slotContainer = document.getElementById('slotContainer');
+    slotContainer.style.display = 'none';
     stoppedReels = 0;
     stoppedReelImage = 0;
     firstReelImage = null;
 
     if (result[0] === result[1] && result[1] === result[2]) {
+        atari.pause();
+        atari.currentTime=0;
         atari.play();
 
         let fishContainer = document.getElementById('fish-container');
@@ -464,6 +464,8 @@ function checkResult() {
         fishContainer.style.display = 'block';
         slotResultImg.src = `/static/images/${result[0]}`;
     } else {
+        hazure.pause();
+        hazure.currentTime=0;
         hazure.play();
 
         let gomiContainer = document.getElementById('gomi-container');
