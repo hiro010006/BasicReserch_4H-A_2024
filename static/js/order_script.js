@@ -21,8 +21,8 @@ document.querySelectorAll('.sushi-name').forEach(function (element) {
 });
 
 const recommend_sushi_paths = {
-    "ウニ": "/static/images/recommend_uni.png",
-    "イクラ": "/static/images/recommend_ikura.png"
+    "uni": "/static/images/recommend_uni.png",
+    "ikura": "/static/images/recommend_ikura.png"
 };
 
 let currentIndex = 0;
@@ -144,8 +144,8 @@ function changeImage(direction) {
 
 function updateDisplay() {
     document.getElementById('total-price').innerText = `合計金額:\n¥${totalPrice}`;
-    document.getElementById('total-bait').innerText = `釣り餌の数:\n${totalBait}`;
-    document.getElementById('turi-total-bait').innerText = `釣り餌の数: ${totalBait}`;
+    document.getElementById('total-bait').innerText = `釣りコイン:\n${totalBait}`;
+    document.getElementById('turi-total-bait').innerText = `釣りコイン: ${totalBait}`;
     sessionStorage.setItem('totalPrice', totalPrice);
     sessionStorage.setItem('totalBait', totalBait);
 }
@@ -268,24 +268,24 @@ const slots = [
     document.getElementById('slot2').getElementsByTagName('img')[0],
     document.getElementById('slot3').getElementsByTagName('img')[0]
 ];
-var symbols = [
-    '/static/images/maguro.png',
-    '/static/images/ika.png',
-    '/static/images/uni.png',
-    '/static/images/ebi.png',
-    '/static/images/ikura.png',
-    '/static/images/tamago.png'
-];
-let initialSpeed = 100; // 初期スピード
+
 let slotTimers = [];
 let isSpinning = [false, false, false]; // 各リールの状態を管理
-let speeds = [initialSpeed, initialSpeed, initialSpeed]; // 各リールのスピードを独立して管理
+let speed = 100;  // 各リールのスピードを独立して管理
 
 var role = new Audio("/static/music/roling.mp3");
 var atari = new Audio("/static/music/omedetou.mp3");
 var hazure = new Audio("/static/music/hazure.mp3");
 var stopRole = new Audio("/static/music/stop.mp3");
 var start = new Audio("/static/music/start.mp3");
+var reach = new Audio("/static/music/reach.mp3");
+let startDel = document.getElementById('startButton');
+let slotRole1 = document.getElementById('slotbox1');
+let slotRole2 = document.getElementById('slotbox2');
+let slotRole3 = document.getElementById('slotbox3');
+let stopButton1 = document.getElementById('stopButton1');
+let stopButton2 = document.getElementById('stopButton2');
+let stopButton3 = document.getElementById('stopButton3');
 role.volume -= 0.5;
 start.volume -= 0.7;
 
@@ -302,53 +302,133 @@ function startSlot(){
 
 // スロットを開始する関数
 function slotrole() {
+    let sushiKeys = Object.keys(sushiInfo);
     let startDel = document.getElementById('startButton');
+    let slotContainer = document.getElementById('slotContainer');
+    /*
     let slotRole1 = document.getElementById('slotbox1');
     let slotRole2 = document.getElementById('slotbox2');
     let slotRole3 = document.getElementById('slotbox3');
+    */
     startDel.style.display = 'none';
+    slotContainer.style.display = 'flex';
+    /*
     slotRole1.style.display = 'block';
     slotRole2.style.display = 'block';
     slotRole3.style.display = 'block';
+    let stopButton1 = document.getElementById('stopButton1');
+    let stopButton2 = document.getElementById('stopButton2');
+    let stopButton3 = document.getElementById('stopButton3');
+    stopButton1.style.display = 'block';
+    stopButton2.style.display = 'block';
+    stopButton3.style.display = 'block';
+    */
     document.getElementById('result').textContent = ''; // 結果をクリア
     start.play();
     for (let i = 0; i < slots.length; i++) {
         if (!isSpinning[i]) {
             isSpinning[i] = true;
-            speeds[i] = initialSpeed; // 各リールのスピードを初期化
             slotTimers[i] = setInterval(() => {
-                slots[i].src = symbols[Math.floor(Math.random() * symbols.length)];
-            }, speeds[i]);
+                let randomKey = sushiKeys[Math.floor(Math.random() * sushiKeys.length)];
+                slots[i].src = `/static/images/` + sushiInfo[randomKey]["img_path"];
+            }, speed);
         }
     }
 }
-
+let stoppedReels;
+let stoppedReelImage;
+let firstReelImage = null;  // 1回目に停止したリールの画像
+var index;
+var random;
+var symbolsReelImage;
+var firstSlot;
+var secondSlot;
+var thirdSlot;
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 // スロットを停止する関数（リールごと）
-function stopSlot(reelIndex) {
+async function stopSlot(reelIndex) {
+    stoppedReels = 0;
     stopRole.pause();
     stopRole.currentTime=0;
     stopRole.play();
     if (isSpinning[reelIndex]) {
         clearInterval(slotTimers[reelIndex]);
-        isSpinning[reelIndex] = false;
-        // 他のリールのスピードを遅くする
-        for (let i = 0; i < slots.length; i++) {
-            if (isSpinning[i]) {
-                // スピードを増やして遅くする
-                speeds[i] +=250;
-                clearInterval(slotTimers[i]); // 既存のタイマーをクリア
-                slotTimers[i] = setInterval(() => {
-                    slots[i].src = symbols[Math.floor(Math.random() * symbols.length)];
-                }, speeds[i]); // 更新されたスピードで再度タイマーを設定
+        isSpinning[reelIndex] = false;        // isSpinning配列の中でfalseの数を数える
+        stoppedReels = isSpinning.filter(spin => !spin).length;
+        stoppedReelImage = slots[reelIndex].src.split('/').pop();
+        // 1回目の停止であれば、その画像を保存
+        if (firstReelImage === null) {
+            let stopButton1 = document.getElementById(`stopButton${reelIndex + 1}`);
+            stopButton1.style.display = 'none';
+            firstReelImage = stoppedReelImage;
+            firstSlot = stoppedReelImage;
+        }
+
+        if (stoppedReels == 2 && Math.random() < 0.7){
+            let stopButton2 = document.getElementById(`stopButton${reelIndex + 1}`);
+            stopButton2.style.display = 'none'
+            reach.pause();
+            reach.currentTime=0;
+            reach.play();
+            slots[reelIndex].src = `/static/images/${firstReelImage}`;
+            secondSlot = firstReelImage;
+        }else{
+            if (stoppedReels == 2){
+                let stopButton2 = document.getElementById(`stopButton${reelIndex + 1}`);
+                stopButton2.style.display = 'none'
+                let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
+                index = imgPaths;
+                index = imgPaths.filter(x=> x !== firstReelImage);
+                random = Math.floor(Math.random() * 5 );
+                symbolsReelImage = index[random];
+                slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
+                secondSlot = symbolsReelImage;
             }
         }
 
-        // 全てのリールが停止したら結果を判定
-        if (!isSpinning.includes(true)) {
-            checkResult();
+        if (stoppedReels == 3 && Math.random() <0){
+            let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
+            stopButton3.style.display = 'none'
+            slots[reelIndex].src = `/static/images/${firstReelImage}`;
+        }else{
+            if (stoppedReels == 3 && firstSlot == secondSlot){
+                let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
+                stopButton3.style.display = 'none'
+                let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
+                index = imgPaths;
+                index = imgPaths.filter(x=> x !== firstReelImage);
+                random = Math.floor(Math.random() * 5 );
+                symbolsReelImage = index[random];
+                slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
+                if(stoppedReels == 3 && Math.random() < 1) {
+                    await delay(1000);
+                    for (let i = 0; i < 10; i++) {
+                        slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
+                        await delay(100);
+                        slots[reelIndex].src = `/static/images/${firstReelImage}`;
+                        await delay(100);
+                    }
+                    await delay(1000);
+                    if(Math.random() < 0.9){
+                        slots[reelIndex].src = `/static/images/${firstReelImage}`;
+                        stopRole.pause();
+                        stopRole.currentTime=0;
+                        stopRole.play();
+                    }
+                }
+            }
+
         }
     }
+    // 全てのリールが停止したら結果を判定
+    if (!isSpinning.includes(true)) {
+        await delay(1000);
+        checkResult();
+    }
 }
+
 
 // 結果の判定関数
 function checkResult() {
@@ -365,6 +445,16 @@ function checkResult() {
     slotRole1.style.display = 'none';
     slotRole2.style.display = 'none';
     slotRole3.style.display = 'none';
+  
+    let stopButton2 = document.getElementById('stopButton2');
+    let stopButton3 = document.getElementById('stopButton3');
+
+    stopButton2.style.display = 'none';
+    stopButton3.style.display = 'none';
+    stoppedReels = 0;
+    stoppedReelImage = 0;
+    firstReelImage = null;
+
     if (result[0] === result[1] && result[1] === result[2]) {
         atari.play();
 

@@ -425,7 +425,7 @@
 
 .slot-container {
     position: relative;
-    display: flex;
+    display: none;
     justify-content: center;
     margin: 1.5vh 0;
 }
@@ -453,7 +453,7 @@
     gap: 1vw; /* ボタン間のスペース */
 }
 
-.stopButton, .startButton {
+#stopButton1,#stopButton2,#stopButton3, .startButton {
     position: relative;
     margin: 0 auto;
     margin-top: 1.5vh;
@@ -473,15 +473,15 @@
     font-size: 5vh;
 }
 
-.stopButton:hover, .startButton:hover {
+#stopButton1:hover, #stopButton2:hover, #stopButton3:hover, .startButton:hover {
     background-color: #24507c;
     transform: translateY(-3px);
 }
-
+/*
 #slotbox1, #slotbox2, #slotbox3{
     display: none;
 }
-
+*/
 
 #result {
     position: relative;

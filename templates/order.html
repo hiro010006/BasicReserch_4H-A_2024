@@ -35,7 +35,7 @@
             </div>
             <div class = "side-button-container">
                 <div class="side-total" id="total-price">合計金額:<br>¥{{ total_price }}</div>
-                <div class="side-total" id="total-bait">釣り餌の数:<br>{{ total_bait }}</div>
+                <div class="side-total" id="total-bait">寿司コイン:<br>{{ total_bait }}</div>
                 <button class="history-button side-button" onclick="openSlideMenu('history')">注文履歴</button>
                 <button class="bait-button side-button" onclick="addBait()">釣り餌<br>(¥100)</button>
                 <button class="return-plate-button side-button" onclick="sendMessage('returnPlate')">お皿返却</button>
@@ -94,7 +94,7 @@
             </div>
             <div class="container">
                 <div id = "slottitle">寿司スロット</div>
-                <div class="slot-container">
+                <div class ="slot-container" id = "slotContainer">
                     <div id = "slotbox1">
                         <div id="slot1" class="slot"><img src="static/images/maguro.png" style="height: 15vh; width: 15vw;"></div>
                         <button id="stopButton1" class="stopButton">ストップ</button>
