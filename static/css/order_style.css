@@ -469,9 +469,17 @@
     padding: 0.8vh 0.8vw;
 }
 
+.startButton{
+    font-size: 5vh;
+}
+
 .stopButton:hover, .startButton:hover {
     background-color: #24507c;
     transform: translateY(-3px);
+}
+
+#slotbox1, #slotbox2, #slotbox3{
+    display: none;
 }
 
 

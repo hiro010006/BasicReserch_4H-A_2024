@@ -302,6 +302,14 @@ function startSlot(){
 
 // スロットを開始する関数
 function slotrole() {
+    let startDel = document.getElementById('startButton');
+    let slotRole1 = document.getElementById('slotbox1');
+    let slotRole2 = document.getElementById('slotbox2');
+    let slotRole3 = document.getElementById('slotbox3');
+    startDel.style.display = 'none';
+    slotRole1.style.display = 'block';
+    slotRole2.style.display = 'block';
+    slotRole3.style.display = 'block';
     document.getElementById('result').textContent = ''; // 結果をクリア
     start.play();
     for (let i = 0; i < slots.length; i++) {
@@ -317,13 +325,12 @@ function slotrole() {
 
 // スロットを停止する関数（リールごと）
 function stopSlot(reelIndex) {
+    stopRole.pause();
+    stopRole.currentTime=0;
+    stopRole.play();
     if (isSpinning[reelIndex]) {
-        stopRole.pause();
-        stopRole.currentTime=0;
-        stopRole.play();
         clearInterval(slotTimers[reelIndex]);
         isSpinning[reelIndex] = false;
-
         // 他のリールのスピードを遅くする
         for (let i = 0; i < slots.length; i++) {
             if (isSpinning[i]) {
@@ -348,8 +355,16 @@ function checkResult() {
     const result = slots.map(slot => slot.src.split('/').pop()); // 画像ファイル名を取得
     let caughtClose = document.getElementById('fish-close');
     let gomiClose = document.getElementById('gomi-close');
+    let startDel = document.getElementById('startButton');
     caughtClose.style.display = 'block';
     gomiClose.style.display = 'block';
+    startDel.style.display = 'block';
+    let slotRole1 = document.getElementById('slotbox1');
+    let slotRole2 = document.getElementById('slotbox2');
+    let slotRole3 = document.getElementById('slotbox3');
+    slotRole1.style.display = 'none';
+    slotRole2.style.display = 'none';
+    slotRole3.style.display = 'none';
     if (result[0] === result[1] && result[1] === result[2]) {
         atari.play();
 
