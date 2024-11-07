@@ -15,18 +15,18 @@ env_Dobot = True #webappだけ動かすときはFalse
 detection_img_size = 640 #square 640 * 640
 cam_frame_size = {"x" : 16, "y" : 9} #please set x > y
 position_cam = {"x" : -180, "y" : 250, "z" : 850}
-theta_x0 = math.radians(26) # cam_degree, dobot_x
+theta_x0 = math.radians(28) # cam_degree, dobot_x
 diagonal_angle_views = math.radians(55)
 angles_of_view = {"horizontal" : diagonal_angle_views * cam_frame_size["x"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2)), 
                   "vertical" : diagonal_angle_views * cam_frame_size["y"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2))}
-initial_position = {"x" : 400, "y" : 0, "z" : 100, "r" : 0}
+initial_position = {"x" : 400, "y" : 0, "z" : 160, "r" : 0}
 number_of_plates = 7
 thickness_of_plate = 4.25
 position_plate = {"x" : 300, "y" : 0}
 catch_position_z = {"sushi" : 65, "plate" : 52}
-release_position = {"sushi" : {"x" : 200, "y" : -300, "z" : 150, "r" : 0},
-                    "plate" : {"x" : 200, "y" : -300, "z" : 150, "r" : 0}}
-angles_of_servo = {"open" : 60, "sushi_close" : 135, "plate_close" : 100}
+release_position = {"sushi" : {"x" : 300, "y" : -230, "z" : 150, "r" : -20},
+                    "plate" : {"x" : 300, "y" : -230, "z" : 160, "r" : 0}}
+angles_of_servo = {"open" : 60, "sushi_close" : 130, "plate_close" : 100}
 sushis_to_get = {}
 
 # Details of each servers
@@ -216,6 +216,8 @@ def arm_control(position_table):
             num_of_sushi_to_move = 0
 
 def place_plate():
+    client_sockets["rpi4_client_sock"].sendall("serve_plate".encode('utf-8'))
+    """
     global number_of_plates,client_sockets
     z_plate = catch_position_z["plate"] + thickness_of_plate * number_of_plates
     client_sockets["dobot_client_sock"].jump_to(x = position_plate["x"], y = position_plate["y"], z = int(z_plate), r = 0)
@@ -224,6 +226,7 @@ def place_plate():
     hand_control(angles_of_servo["open"])
     number_of_plates -= 1
     client_sockets["dobot_client_sock"].wait(1000)
+    """
 
 def lane_control(lane_massege):
     client_sockets["rpi4_client_sock"].sendall(lane_massege.encode('utf-8'))
@@ -233,4 +236,4 @@ def lane_control(lane_massege):
 if __name__ == '__main__':
     if env_Dobot:
         threading.Thread(target=process_control).start()
-    serve(app, host='127.0.0.1', port=5000, threads=8)
+    serve(app, host='192.168.137.235', port=5000, threads=8)
