@@ -9,7 +9,7 @@ from flask import Flask, request, render_template, session, jsonify
 from waitress import serve
 import threading
 
-env_Dobot = True #webappだけ動かすときはFalse
+env_Dobot = False #webappだけ動かすときはFalse
 
 # Initial value setting
 detection_img_size = 640 #square 640 * 640
@@ -236,4 +236,5 @@ def lane_control(lane_massege):
 if __name__ == '__main__':
     if env_Dobot:
         threading.Thread(target=process_control).start()
-    serve(app, host='192.168.137.235', port=5000, threads=8)
+    serve(app, host='127.0.0.1', port=5000, threads=8)
+    #'192.168.137.235'

@@ -10,6 +10,19 @@ lang = "jp"
 
 let sushiInfo = JSON.parse(document.getElementById('hidden-sushi-info').value);
 
+const sushiInfoByImg = Object.fromEntries(
+    Object.entries(sushiInfo).map(([key, value]) => [value.img_path, key])
+);
+/*sushiInfoByImgの中身の構造は以下の通り
+{
+    "maguro.png": "maguro",
+    "ika.png": "ika",
+    "ebi.png": "ebi",
+    "ikura.png": "ikura",
+    "uni.png": "uni",
+    "tamago.png": "tamago"
+}
+*/
 // 言語設定を取得して日本語か英語の表示を切り替え
 const language = navigator.language.startsWith('ja') ? 'jp' : 'en';
 
@@ -305,24 +318,10 @@ function slotrole() {
     let sushiKeys = Object.keys(sushiInfo);
     let startDel = document.getElementById('startButton');
     let slotContainer = document.getElementById('slotContainer');
-    /*
-    let slotRole1 = document.getElementById('slotbox1');
-    let slotRole2 = document.getElementById('slotbox2');
-    let slotRole3 = document.getElementById('slotbox3');
-    */
+
     startDel.style.display = 'none';
     slotContainer.style.display = 'flex';
-    /*
-    slotRole1.style.display = 'block';
-    slotRole2.style.display = 'block';
-    slotRole3.style.display = 'block';
-    let stopButton1 = document.getElementById('stopButton1');
-    let stopButton2 = document.getElementById('stopButton2');
-    let stopButton3 = document.getElementById('stopButton3');
-    stopButton1.style.display = 'block';
-    stopButton2.style.display = 'block';
-    stopButton3.style.display = 'block';
-    */
+
     document.getElementById('result').textContent = ''; // 結果をクリア
     start.play();
     for (let i = 0; i < slots.length; i++) {
@@ -374,23 +373,21 @@ async function stopSlot(reelIndex) {
             reach.play();
             slots[reelIndex].src = `/static/images/${firstReelImage}`;
             secondSlot = firstReelImage;
-        }else{
-            if (stoppedReels == 2){
-                let stopButton2 = document.getElementById(`stopButton${reelIndex + 1}`);
-                stopButton2.style.display = 'none'
-                let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
-                index = imgPaths;
-                index = imgPaths.filter(x=> x !== firstReelImage);
-                random = Math.floor(Math.random() * 5 );
-                symbolsReelImage = index[random];
-                slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
-                secondSlot = symbolsReelImage;
-            }
+        }else if (stoppedReels == 2){
+            let stopButton2 = document.getElementById(`stopButton${reelIndex + 1}`);
+            stopButton2.style.display = 'none'
+            let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
+            index = imgPaths;
+            index = imgPaths.filter(x=> x !== firstReelImage);
+            random = Math.floor(Math.random() * 5 );
+            symbolsReelImage = index[random];
+            slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
+            secondSlot = symbolsReelImage;
         }
 
         if (stoppedReels == 3 && Math.random() <0){
             let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
-            stopButton3.style.display = 'none'
+            stopButton3.style.display = 'none';
             slots[reelIndex].src = `/static/images/${firstReelImage}`;
         }else{
             if (stoppedReels == 3 && firstSlot == secondSlot){
@@ -460,14 +457,19 @@ function checkResult() {
 
         let fishContainer = document.getElementById('fish-container');
         let slotResultImg = document.getElementById('slot-result-img');
+        let confirmEatSushiButton = document.getElementById('confirm-eat-sushi-button');
 
         fishContainer.style.display = 'block';
         slotResultImg.src = `/static/images/${result[0]}`;
+        
+        sushi_key = sushiInfoByImg[result[0]]
+        confirmEatSushiButton.addEventListener('click', () => winSlotAndEat(sushi_key));
     } else {
         hazure.play();
 
         let gomiContainer = document.getElementById('gomi-container');
         let gomiResultImg = document.getElementById('gomi-result-img');
+        let confirmReturnSushiButton = document.getElementById('confirm-return-sushi-button');
 
         gomiContainer.style.display = 'block';
         gomiResultImg.src = `/static/images/gomi.png`;
@@ -481,6 +483,18 @@ function closeFishContainer(){
     gomiContainer.style.display = 'none';
 }
 
+function winSlotAndEat(sushi_key){
+    let slotSushiOrder = {};
+    slotSushiOrder[sushi_key] = { count: 1, price: sushiInfo[sushi_key]["price"] };
+    sendOrderData(slotSushiOrder);
+    closeFishContainer();
+}
+
+function winSlotAndReturn(){
+    totalBait += 2;
+    updateDisplay();
+    closeFishContainer();
+}
 
 
 // イベントリスナーをボタンに追加
