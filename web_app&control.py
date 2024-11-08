@@ -9,13 +9,13 @@ from flask import Flask, request, render_template, session, jsonify
 from waitress import serve
 import threading
 
-env_Dobot = False #webappだけ動かすときはFalse
+env_Dobot = True #webappだけ動かすときはFalse
 
 # Initial value setting
 detection_img_size = 640 #square 640 * 640
 cam_frame_size = {"x" : 16, "y" : 9} #please set x > y
 position_cam = {"x" : -180, "y" : 250, "z" : 850}
-theta_x0 = math.radians(28) # cam_degree, dobot_x
+theta_x0 = math.radians(29) # cam_degree, dobot_x
 diagonal_angle_views = math.radians(55)
 angles_of_view = {"horizontal" : diagonal_angle_views * cam_frame_size["x"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2)), 
                   "vertical" : diagonal_angle_views * cam_frame_size["y"] / (math.sqrt(cam_frame_size["x"] ** 2 + cam_frame_size["y"] ** 2))}
@@ -26,14 +26,14 @@ position_plate = {"x" : 300, "y" : 0}
 catch_position_z = {"sushi" : 65, "plate" : 52}
 release_position = {"sushi" : {"x" : 300, "y" : -230, "z" : 150, "r" : -20},
                     "plate" : {"x" : 300, "y" : -230, "z" : 160, "r" : 0}}
-angles_of_servo = {"open" : 60, "sushi_close" : 130, "plate_close" : 100}
+angles_of_servo = {"open" : 60, "sushi_close" : 135, "plate_close" : 100}
 sushis_to_get = {}
 
 # Details of each servers
 detection_server_host = '127.0.0.1'
 detection_server_port = 55580
 dobot_server_host = '10.133.4.122'
-dobot_server_port = 7085
+dobot_server_port = 7084
 pico_server_host = '192.168.137.114'
 pico_server_port = 8851
 rpi4_server_host = '10.133.6.123'
