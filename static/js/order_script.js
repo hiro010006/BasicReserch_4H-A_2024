@@ -396,7 +396,7 @@ async function stopSlot(reelIndex) {
             }
         }
 
-        if (stoppedReels == 3 && Math.random() <0.3){
+        if (firstSlot == secondSlot && stoppedReels == 3 && Math.random() <0.4){
             let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
             stopButton3.style.display = 'none';
             slots[reelIndex].src = `/static/images/${firstReelImage}`;
@@ -410,7 +410,7 @@ async function stopSlot(reelIndex) {
                 random = Math.floor(Math.random() * 5 );
                 symbolsReelImage = index[random];
                 slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
-                if(stoppedReels == 3 && Math.random() < 0.3 && firstSlot == secondSlot) {
+                if(stoppedReels == 3 && Math.random() < 0.4 && firstSlot == secondSlot) {
                     await delay(1000);
                     kyuin.pause();
                     kyuin.currentTime=0;
@@ -429,7 +429,7 @@ async function stopSlot(reelIndex) {
                     loop.currentTime=0;
                     loop.play();
                     await delay(1000);
-                    if(Math.random() < 0.9){
+                    if(Math.random() < 0.5){
                         slots[reelIndex].src = `/static/images/${firstReelImage}`;
                         stopRole.pause();
                         stopRole.currentTime=0;
@@ -443,7 +443,7 @@ async function stopSlot(reelIndex) {
             }
 
         }
-        if (stoppedReels == 3 && firstSlot !== secondSlot && firstSlot !== thirdSlot && secondSlot !== thirdSlot && Math.random() < 0.1){
+        if (stoppedReels == 3 && firstSlot !== secondSlot && firstSlot !== thirdSlot && secondSlot !== thirdSlot && Math.random() < 0.3){
             let dark = document.getElementById("dark");
             await delay(1000);
             dark.style.display = "block";
@@ -452,10 +452,8 @@ async function stopSlot(reelIndex) {
             shoutou.play();
             await delay(1000);
             let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
-            index = imgPaths;
-            index = imgPaths.filter(x=> x !== firstReelImage);
             random = Math.floor(Math.random() * 6 );
-            symbolsReelImage = index[random];
+            symbolsReelImage = imgPaths[random];
             for (let i = 0; i < 3; i++){
                 slots[i].src = `/static/images/${symbolsReelImage}`;
             }
@@ -496,7 +494,7 @@ function checkResult() {
         slotResultImg.src = `/static/images/${result[0]}`;
         
         sushi_key = sushiInfoByImg[result[0]]
-        confirmEatSushiButton.addEventListener('click', () => winSlotAndEat(sushi_key));
+        confirmEatSushiButton.onclick = () => winSlotAndEat(sushi_key);
     } else {
         hazure.pause();
         hazure.currentTime=0;
