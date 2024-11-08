@@ -294,6 +294,7 @@ var start = new Audio("/static/music/start.mp3");
 var reach = new Audio("/static/music/reach.mp3");
 var kyuin = new Audio("/static/music/kyuin.mp3");
 var loop = new Audio("/static/music/loop.mp3");
+var shoutou = new Audio("/static/music/shoutou.mp3");
 let startDel = document.getElementById('startButton');
 let slotRole1 = document.getElementById('slotbox1');
 let slotRole2 = document.getElementById('slotbox2');
@@ -348,14 +349,14 @@ let firstReelImage = null;  // 1回目に停止したリールの画像
 var index;
 var random;
 var symbolsReelImage;
+var firstSlot;
+var secondSlot;
+var thirdSlot;
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 // スロットを停止する関数（リールごと）
 async function stopSlot(reelIndex) {
-    var firstSlot;
-    var secondSlot;
-    var thirdSlot;
     stoppedReels = 0;
     stopRole.pause();
     stopRole.currentTime=0;
@@ -373,7 +374,7 @@ async function stopSlot(reelIndex) {
             firstSlot = stoppedReelImage;
         }
 
-        if (stoppedReels == 2 && Math.random() < 1){
+        if (stoppedReels == 2 && Math.random() < 0.7){
             let stopButton2 = document.getElementById(`stopButton${reelIndex + 1}`);
             stopButton2.style.display = 'none';
             reach.pause();
@@ -395,21 +396,21 @@ async function stopSlot(reelIndex) {
             }
         }
 
-        if (stoppedReels == 3 && Math.random() <0){
+        if (stoppedReels == 3 && Math.random() <0.3){
             let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
             stopButton3.style.display = 'none';
             slots[reelIndex].src = `/static/images/${firstReelImage}`;
         }else{
             let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
             stopButton3.style.display = 'none';
-            if (stoppedReels == 3 && firstSlot == secondSlot){
+            if (stoppedReels == 3){
                 let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
                 index = imgPaths;
                 index = imgPaths.filter(x=> x !== firstReelImage);
                 random = Math.floor(Math.random() * 5 );
                 symbolsReelImage = index[random];
                 slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
-                if(stoppedReels == 3 && Math.random() < 1) {
+                if(stoppedReels == 3 && Math.random() < 0.3 && firstSlot == secondSlot) {
                     await delay(1000);
                     kyuin.pause();
                     kyuin.currentTime=0;
@@ -424,8 +425,11 @@ async function stopSlot(reelIndex) {
                         slots[reelIndex].src = `/static/images/${symbolsReelImage}`;
                         await delay(100);
                     }
+                    loop.pause();
+                    loop.currentTime=0;
+                    loop.play();
                     await delay(1000);
-                    if(Math.random() < 1){
+                    if(Math.random() < 0.9){
                         slots[reelIndex].src = `/static/images/${firstReelImage}`;
                         stopRole.pause();
                         stopRole.currentTime=0;
@@ -439,8 +443,23 @@ async function stopSlot(reelIndex) {
             }
 
         }
-        if (stoppedReels == 3 && firstSlot !== secondSlot !== thirdSlot){
-            
+        if (stoppedReels == 3 && firstSlot !== secondSlot && firstSlot !== thirdSlot && secondSlot !== thirdSlot && Math.random() < 0.1){
+            let dark = document.getElementById("dark");
+            await delay(1000);
+            dark.style.display = "block";
+            shoutou.pause();
+            shoutou.currentTime=0;
+            shoutou.play();
+            await delay(1000);
+            let imgPaths = Object.values(sushiInfo).map(sushi => sushi.img_path);
+            index = imgPaths;
+            index = imgPaths.filter(x=> x !== firstReelImage);
+            random = Math.floor(Math.random() * 6 );
+            symbolsReelImage = index[random];
+            for (let i = 0; i < 3; i++){
+                slots[i].src = `/static/images/${symbolsReelImage}`;
+            }
+            dark.style.display = "none";
         }
     }
     // 全てのリールが停止したら結果を判定
@@ -454,10 +473,8 @@ async function stopSlot(reelIndex) {
 // 結果の判定関数
 function checkResult() {
     const result = slots.map(slot => slot.src.split('/').pop()); // 画像ファイル名を取得
-    let caughtClose = document.getElementById('fish-close');
     let gomiClose = document.getElementById('gomi-close');
     let startDel = document.getElementById('startButton');
-    caughtClose.style.display = 'block';
     gomiClose.style.display = 'block';
     startDel.style.display = 'block';
     let slotContainer = document.getElementById('slotContainer');
@@ -479,8 +496,7 @@ function checkResult() {
         slotResultImg.src = `/static/images/${result[0]}`;
         
         sushi_key = sushiInfoByImg[result[0]]
-        let counter = 0;
-        confirmEatSushiButton.addEventListener('click', () => {counter = 0; winSlotAndEat(sushi_key)});
+        confirmEatSushiButton.addEventListener('click', () => winSlotAndEat(sushi_key));
     } else {
         hazure.pause();
         hazure.currentTime=0;
@@ -488,8 +504,6 @@ function checkResult() {
 
         let gomiContainer = document.getElementById('gomi-container');
         let gomiResultImg = document.getElementById('gomi-result-img');
-        let confirmReturnSushiButton = document.getElementById('confirm-return-sushi-button');
-
         gomiContainer.style.display = 'block';
         gomiResultImg.src = `/static/images/gomi.png`;
     }
