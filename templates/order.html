@@ -19,7 +19,7 @@
                 {% for sushi_key, sushi_data in sushi_info.items() %}
                     <div class="sushi-item">
                         <button class="sushi-button" onclick="toggleSushiOrder('{{ sushi_key }}')">
-                            <img src="{{ url_for('static', filename='images/' + sushi_data['img_path']) }}" style="height: 15vh; width: auto;">
+                            <img src="{{ url_for('static', filename='images/' + sushi_data['img_path']) }}" style="height: 20vh; width: auto;">
                             <p class="money-name" data-sushi-price="{{ sushi_data['price'] }}">{{ sushi_data['price'] }}円</p>
                             <p class="sushi-name" data-sushi-name-jp="{{ sushi_data['name']['jp'] }}" data-sushi-name-en="{{ sushi_data['name']['en'] }}">
                                 {{ sushi_data['name']['jp'] }}
@@ -37,7 +37,7 @@
                 <div class="side-total" id="total-price">合計金額:<br>¥{{ total_price }}</div>
                 <div class="side-total" id="total-bait">寿司コイン:<br>{{ total_bait }}</div>
                 <button class="history-button side-button" onclick="openSlideMenu('history')">注文履歴</button>
-                <button class="bait-button side-button" onclick="addBait()">釣り餌<br>(¥100)</button>
+                <button class="bait-button side-button" onclick="addBait()">釣りコイン<br>(¥100)</button>
                 <button class="return-plate-button side-button" onclick="sendMessage('returnPlate')">お皿返却</button>
                 <button class="confirm-order-button side-button" onclick="openSlideMenu('slide-menu')">注文確認</button>
                 <button class="kaikei-button side-button" onclick="openSlideMenu('kaikei')">お会計</button>
@@ -122,7 +122,7 @@
             <div id="boat-img">
                 <img src="{{ url_for('static', filename='images/boat.png') }}" alt="船の画像">
             </div>
-            <div id="turi-total-bait">釣り餌の数: {{ total_bait }}</div>
+            <div id="turi-total-bait">寿司コイン: {{ total_bait }}</div>
 
             <input type="hidden" id="hidden-sushi-info" value='{{ sushi_info_json }}'>
             <input type="hidden" name="total_bait" id="hidden-total-bait" value="{{ total_bait }}">

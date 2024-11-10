@@ -157,8 +157,8 @@ function changeImage(direction) {
 
 function updateDisplay() {
     document.getElementById('total-price').innerText = `合計金額:\n¥${totalPrice}`;
-    document.getElementById('total-bait').innerText = `釣りコイン:\n${totalBait}`;
-    document.getElementById('turi-total-bait').innerText = `釣りコイン: ${totalBait}`;
+    document.getElementById('total-bait').innerText = `寿司コイン:\n${totalBait}`;
+    document.getElementById('turi-total-bait').innerText = `寿司コイン: ${totalBait}`;
     sessionStorage.setItem('totalPrice', totalPrice);
     sessionStorage.setItem('totalBait', totalBait);
 }
@@ -168,7 +168,7 @@ function updateOrderSummary() {
     let orderSummary = document.getElementById('order-summary');
     let currentOrderTotal = document.getElementById('current-order-total-price');
     document.getElementById('kaikei-total').innerText = `合計金額: ¥${totalPrice}`;
-    document.getElementById('amari-bait').innerText = `あまった釣り餌の数 x ${totalBait} ー¥${totalBait * 100}`;
+    document.getElementById('amari-bait').innerText = `残りの寿司コイン x ${totalBait} ー¥${totalBait * 100}`;
     finalkaikei = totalPrice - (totalBait * 100);
     document.getElementById('final-kaikei').innerText =`お会計金額: ¥ ${finalkaikei}`;
     let orderTotal = document.getElementById('order-total-price');
@@ -284,7 +284,7 @@ const slots = [
 
 let slotTimers = [];
 let isSpinning = [false, false, false]; // 各リールの状態を管理
-let speed = 100;  // 各リールのスピードを独立して管理
+let speed = 100;  // リールのスピードを独立して管理
 
 var role = new Audio("/static/music/roling.mp3");
 var atari = new Audio("/static/music/omedetou.mp3");
@@ -305,6 +305,7 @@ let stopButton3 = document.getElementById('stopButton3');
 role.volume -= 0.5;
 start.volume -= 0.7;
 loop.volume -= 0.2;
+var num = [0, 1, 2];
 
 //スロットを開始する時に餌を消費するのとスロット中に回しなおしができないようにする
 function startSlot(){
@@ -352,6 +353,8 @@ var symbolsReelImage;
 var firstSlot;
 var secondSlot;
 var thirdSlot;
+var reel1;
+var reel2;
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -363,7 +366,8 @@ async function stopSlot(reelIndex) {
     stopRole.play();
     if (isSpinning[reelIndex]) {
         clearInterval(slotTimers[reelIndex]);
-        isSpinning[reelIndex] = false;        // isSpinning配列の中でfalseの数を数える
+        isSpinning[reelIndex] = false;        
+        // isSpinning配列の中でfalseの数を数える
         stoppedReels = isSpinning.filter(spin => !spin).length;
         stoppedReelImage = slots[reelIndex].src.split('/').pop();
         // 1回目の停止であれば、その画像を保存
@@ -372,6 +376,7 @@ async function stopSlot(reelIndex) {
             stopButton1.style.display = 'none';
             firstReelImage = stoppedReelImage;
             firstSlot = stoppedReelImage;
+            reel1 = reelIndex;
         }
 
         if (stoppedReels == 2 && Math.random() < 0.7){
@@ -382,6 +387,16 @@ async function stopSlot(reelIndex) {
             reach.play();
             slots[reelIndex].src = `/static/images/${firstReelImage}`;
             secondSlot = firstReelImage;
+            reel2 = reelIndex;
+            if(Math.random() < 1){
+                var onenumber = num;
+                onenumber = num.filter(x=> x !== reel1 && x !== reel2);
+                console.warn(`${onenumber[0]}`);
+                let stopButton3 = document.getElementById(`stopButton${onenumber[0]}`);
+                stopButton3.style.display = 'none';
+
+            }
+    
         }else{
             if (stoppedReels == 2){
                 let stopButton2 = document.getElementById(`stopButton${reelIndex + 1}`);
@@ -396,7 +411,7 @@ async function stopSlot(reelIndex) {
             }
         }
 
-        if (firstSlot == secondSlot && stoppedReels == 3 && Math.random() <0.4){
+        if (firstSlot == secondSlot && stoppedReels == 3 && Math.random() < 0.4){
             let stopButton3 = document.getElementById(`stopButton${reelIndex + 1}`);
             stopButton3.style.display = 'none';
             slots[reelIndex].src = `/static/images/${firstReelImage}`;
@@ -429,7 +444,7 @@ async function stopSlot(reelIndex) {
                     loop.currentTime=0;
                     loop.play();
                     await delay(1000);
-                    if(Math.random() < 0.5){
+                    if(Math.random() < 0.8){
                         slots[reelIndex].src = `/static/images/${firstReelImage}`;
                         stopRole.pause();
                         stopRole.currentTime=0;
